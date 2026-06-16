@@ -1,69 +1,100 @@
-// LECCIÓN 5: Herencia, Clases Abstractas y Mixins en Dart
+/**
+ * ============================================================================
+ * LECCIÓN 5: ESTRUCTURACIÓN POO AVANZADA - HERENCIA, INTERFACES Y MIXINS
+ * ============================================================================
+ * 
+ * INTRODUCCIÓN TEÓRICA:
+ * A medida que las aplicaciones crecen, la reutilización de código y la creación
+ * de interfaces desacopladas se vuelven indispensables para mantener el código limpio.
+ * Dart ofrece tres herramientas fundamentales para modularizar clases:
+ * 
+ * 1. HERENCIA (extends): Permite crear una jerarquía vertical de clases donde una subclase
+ *    hereda los atributos y métodos de una superclase. (Ejemplo en Flutter: class MyWidget extends StatelessWidget).
+ * 2. INTERFACES (implements): Dart no tiene la palabra reservada 'interface'. En su lugar,
+ *    toda clase define implícitamente una interfaz. Al implementar otra clase, nos obligamos
+ *    a redefinir absolutamente todos sus métodos y atributos.
+ * 3. MIXINS (with): Permiten reutilizar código en múltiples jerarquías de clases sin herencia.
+ *    Evita el "Problema del Diamante" de la herencia múltiple y añade comportamientos bajo demanda.
+ */
 
 void main() {
-  // 1. Herencia y Overriding
-  // En Flutter, tus vistas heredan de 'StatelessWidget' o 'StatefulWidget'
-  // y sobrescriben el método build: @override Widget build(...)
-  final miBoton = BotonRedondo(label: 'Confirmar');
-  miBoton.renderizar(); // Imprime comportamiento heredado y sobrescrito
+  print('=== TEORÍA Y EJEMPLOS: HERENCIA, INTERFACES Y MIXINS ===');
 
-  // 2. Uso de Clases Abstractas e Interfaces
-  // Sirven para definir "contratos" o comportamientos comunes que otras clases deben implementar.
-  // Es la base de arquitecturas limpias para definir repositorios (ej: AuthRepository).
+  // 1. Herencia y Overriding
+  final miBoton = BotonRedondo(label: 'Confirmar');
+  miBoton.renderizar(); // Ejecuta el método sobrescrito
+  miBoton.dispose(); // Ejecuta el método heredado del padre
+
+  // 2. Interfaces y Desacoplamiento
   final servicioAutenticacion = EmailAuth();
   servicioAutenticacion.login('carlos@mail.com', '12345');
 
-  // 3. Mixins (Palabra clave 'with')
-  // Permiten compartir código y métodos entre múltiples clases sin necesidad de usar herencia vertical directa.
-  // En Flutter, verás Mixins cuando hagas animaciones:
-  // class _MyScreenState extends State<MyScreen> with SingleTickerProviderStateMixin
+  // 3. Mixins (with)
   final adminServicio = PanelControl();
-  adminServicio.ejecutarAccionSegura(); // Tiene acceso al método del Mixin Logger
+  adminServicio.ejecutarAccionSegura(); // Accede a los métodos inyectados del Mixin Logger
 }
 
-// ==========================================
-// SECCIÓN 1: Clases Abstractas y Herencia
-// ==========================================
+// ==========================================================
+// SECCIÓN 1: CLASES ABSTRACTAS Y HERENCIA (extends)
+// ==========================================================
 
-// Clase abstracta que no se puede instanciar directamente, define la base de los componentes UI
+/**
+ * CLASE ABSTRACTA:
+ * Es una clase de diseño que no se puede instanciar (no puedes hacer WidgetUI()).
+ * Sirve como molde base para definir propiedades comunes y forzar a las subclases
+ * a implementar ciertos métodos.
+ */
 abstract class WidgetUI {
   final String id;
   WidgetUI(this.id);
 
-  // Método abstracto (sin implementar) que cualquier hijo DEBE definir
+  // Método abstracto: No tiene cuerpo '{}'. Cualquier hijo DEBE implementarlo obligatoriamente.
   void renderizar();
 
-  // Método concreto heredable
+  // Método concreto: Ya tiene lógica. Las subclases lo heredan automáticamente sin necesidad de redefinirlo.
   void dispose() {
-    print('Widget $id destruido de la memoria.');
+    print('Widget $id liberado correctamente de la memoria.');
   }
 }
 
-// BotonRedondo hereda de WidgetUI usando 'extends'
+/**
+ * SUBCLASE (BotonRedondo):
+ * Usa 'extends' para heredar de WidgetUI.
+ * '@override': Es una directiva al compilador indicando que estamos redefiniendo un método de la clase padre.
+ * En Flutter, tu widget principal sobrescribe el método 'Widget build(BuildContext context)' heredado de StatelessWidget.
+ */
 class BotonRedondo extends WidgetUI {
   final String label;
 
-  // Constructor que inicializa los atributos locales y envía el ID al constructor padre usando 'super'
+  // Constructor que inicializa su propiedad y llama al constructor del padre mediante 'super'
   BotonRedondo({required this.label}) : super('btn_$label');
 
-  // Sobrescribe el comportamiento del método abstracto obligado
   @override
   void renderizar() {
     print('Renderizando Botón Circular [$label] en pantalla.');
   }
 }
 
-// ==========================================
-// SECCIÓN 2: Interfaces
-// ==========================================
+// ==========================================================
+// SECCIÓN 2: INTERFACES (implements)
+// ==========================================================
 
-// En Dart no existe la palabra clave 'interface'. Cualquier clase o clase abstracta puede usarse como interfaz
+/**
+ * CONCEPTO DE INTERFAZ IMPLÍCITA:
+ * En Dart, cualquier clase o clase abstracta sirve como interfaz.
+ * Al usar 'implements' en vez de 'extends', no heredamos código de la clase base.
+ * En su lugar, tratamos a la clase base como un contrato: estamos obligados a implementar
+ * cada uno de sus campos y firmas de método desde cero.
+ * 
+ * Uso en Flutter: Es ideal para pruebas unitarias (Testing). Si tienes un servicio de API
+ * real, puedes implementar su interfaz para crear un Mock (simulador) de datos local
+ * sin modificar la lógica de tus pantallas.
+ */
 abstract class Autenticacion {
   void login(String email, String password);
   void logout();
 }
 
-// Implementación de la interfaz mediante 'implements'. Obliga a definir todos los métodos declarados
 class EmailAuth implements Autenticacion {
   @override
   void login(String email, String password) {
@@ -71,31 +102,48 @@ class EmailAuth implements Autenticacion {
   }
 
   @override
+  @override
   void logout() {
     print('Sesión de correo cerrada.');
   }
 }
 
-// ==========================================
-// SECCIÓN 3: Mixins (Compartir funcionalidad)
-// ==========================================
+// ==========================================================
+// SECCIÓN 3: MIXINS (with)
+// ==========================================================
 
-// Un Mixin es una clase sin constructores que almacena métodos utilitarios reutilizables
+/**
+ * CONCEPTO DE MIXIN:
+ * Un Mixin es una clase especial diseñada únicamente para compartir lógica entre múltiples
+ * clases sin necesidad de herencia directa. Se declaran con la palabra clave 'mixin' y no
+ * pueden tener constructores ni instanciarse directamente.
+ * 
+ * ¿Por qué no herencia múltiple?:
+ * Muchos lenguajes prohíben la herencia múltiple porque si una clase hereda de A y B, y ambas
+ * tienen un método llamado 'ejecutar()', la clase hija no sabe cuál llamar (Problema del Diamante).
+ * Dart soluciona esto con Mixins lineales usando la palabra clave 'with'.
+ * 
+ * Uso en Flutter:
+ * Las animaciones en Flutter requieren sincronizarse con la tasa de refresco de la pantalla (60Hz/120Hz).
+ * Para alimentar esta señal de reloj (VSYNC) a tu controlador de animación, inyectas el mixin
+ * 'SingleTickerProviderStateMixin' a tu clase de Estado:
+ * class _MyState extends State<MyWidget> with SingleTickerProviderStateMixin
+ */
 mixin Logger {
   void logInfo(String mensaje) {
-    print('[INFO - ${DateTime.now()}]: $mensaje');
+    print('[LOG - INFO - ${DateTime.now()}]: $mensaje');
   }
 
   void logError(String error) {
-    print('[ERROR - ALERTA CRÍTICA]: $error');
+    print('[LOG - ERROR - ADVERTENCIA]: $error');
   }
 }
 
-// Usamos 'with' para inyectar los métodos del Mixin dentro de PanelControl
+// PanelControl hereda o implementa sus funciones base, pero inyecta los métodos del Mixin Logger
 class PanelControl with Logger {
   void ejecutarAccionSegura() {
-    logInfo('Iniciando proceso crítico del panel...');
-    // Lógica...
-    logInfo('Proceso finalizado con éxito.');
+    logInfo('Iniciando proceso crítico en el panel administrativo...');
+    // Proceso...
+    logInfo('Proceso finalizado.');
   }
 }
