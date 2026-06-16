@@ -23,7 +23,33 @@ class Recipe {
     required this.cuisine,
   });
 
-  // TODO: Implementar el constructor de fábrica `fromJson`
-  // Pista: json['ingredients'] e json['instructions'] son List<dynamic>,
-  // debes convertirlos a List<String> usando List<String>.from(...)
+  factory Recipe.fromJson(Map<String, dynamic> json) {
+    return Recipe(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      image: json['image'] as String,
+      ingredients: List<String>.from(json['ingredients']),
+      instructions: List<String>.from(json['instructions']),
+      prepTimeMinutes: json['prepTimeMinutes'] as int,
+      cookTimeMinutes: json['cookTimeMinutes'] as int,
+      difficulty: json['difficulty'] as String,
+      rating: (json['rating'] as num).toDouble(),
+      cuisine: json['cuisine'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'image': image,
+      'ingredients': ingredients,
+      'instructions': instructions,
+      'prepTimeMinutes': prepTimeMinutes,
+      'cookTimeMinutes': cookTimeMinutes,
+      'difficulty': difficulty,
+      'rating': rating,
+      'cuisine': cuisine,
+    };
+  }
 }

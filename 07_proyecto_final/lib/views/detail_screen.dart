@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/recipe.dart';
-// TODO: Importar provider y el viewmodel
+import '../viewmodels/recipe_viewmodel.dart';
 
 class DetailScreen extends StatelessWidget {
   final Recipe recipe;
@@ -9,7 +10,8 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Obtener si la receta es favorita del ViewModel para alternar el icono del botón flotante
+    final vm = context.watch<RecipeViewModel>();
+    final isFav = vm.isFavorite(recipe);
 
     return Scaffold(
       appBar: AppBar(
@@ -19,13 +21,12 @@ class DetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Imagen de la receta
             Hero(
               tag: 'recipe-img-${recipe.id}',
               child: Image.network(
                 recipe.image,
                 height: 250,
-                fit: BoxFit.cover, // Nota: Asegúrate de importar o usar BoxFit.cover
+                fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
                   height: 250,
                   color: Colors.grey,
@@ -33,28 +34,114 @@ class DetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // TODO: Diseñar el contenido de la receta:
-            // 1. Duración (prep + cook time) en un Row con iconos (Icons.timer)
-            // 2. Dificultad y Rating
-            // 3. Lista de ingredientes (un bucle simple o Column con ListTile de ingredientes)
-            // 4. Lista de instrucciones numeradas
-            
-            const Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Center(
-                child: Text('Instrucciones e ingredientes pendientes de vincular.'),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        recipe.cuisine,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber, size: 20),
+                          const SizedBox(width: 4),
+                          Text('${recipe.rating}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Dificultad: ${recipe.difficulty}',
+                    style: TextStyle(color: Colors.grey.shade400),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.timer_outlined, color: Colors.orange),
+                          const SizedBox(width: 6),
+                          Text('Prep: ${recipe.prepTimeMinutes} min'),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.cookie_outlined, color: Colors.orange),
+                          const SizedBox(width: 6),
+                          Text('Cocción: ${recipe.cookTimeMinutes} min'),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 32),
+                  const Text(
+                    'Ingredientes',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...recipe.ingredients.map((ing) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.check_circle_outline, color: Colors.orange, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text(ing)),
+                          ],
+                        ),
+                      )),
+                  const Divider(height: 32),
+                  const Text(
+                    'Instrucciones',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...recipe.instructions.asMap().entries.map((entry) {
+                    final idx = entry.key + 1;
+                    final step = entry.value;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 10,
+                            backgroundColor: Colors.orange,
+                            child: Text(
+                              '$idx',
+                              style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(step)),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
               ),
             ),
           ],
         ),
       ),
-      // Botón flotante para alternar favorito
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Alternar favorito en el ViewModel
+          context.read<RecipeViewModel>().toggleFavorite(recipe);
         },
-        child: const Icon(Icons.favorite_border), // Cambiar dinámicamente
+        child: Icon(
+          isFav ? Icons.favorite : Icons.favorite_border,
+          color: isFav ? Colors.red : null,
+        ),
       ),
     );
   }

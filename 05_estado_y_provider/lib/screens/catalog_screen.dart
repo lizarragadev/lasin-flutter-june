@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/item.dart';
-// TODO: Importar el CartProvider y package:provider
-// TODO: Importar la pantalla del Carrito (cart_screen.dart)
+import '../providers/cart_provider.dart';
+import 'cart_screen.dart';
 
 class CatalogScreen extends StatelessWidget {
   const CatalogScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Obtener el conteo de items del carrito utilizando Provider (context.watch o Consumer)
-    final int cartItemCount = 0;
+    final cart = context.watch<CartProvider>();
+    final int cartItemCount = cart.items.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -21,7 +22,10 @@ class CatalogScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  // TODO: Navegar a la pantalla de Carrito (CartScreen)
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CartScreen()),
+                  );
                 },
               ),
               if (cartItemCount > 0)
@@ -65,8 +69,7 @@ class CatalogScreen extends StatelessWidget {
         itemCount: mockItems.length,
         itemBuilder: (context, index) {
           final item = mockItems[index];
-          // TODO: Determinar si el item ya está en el carrito para deshabilitar el botón
-          final bool isInCart = false;
+          final bool isInCart = cart.items.contains(item);
 
           return Card(
             elevation: 4,
@@ -115,7 +118,7 @@ class CatalogScreen extends StatelessWidget {
                             onPressed: isInCart
                                 ? null
                                 : () {
-                                    // TODO: Llamar al Provider para agregar el item (context.read)
+                                    context.read<CartProvider>().addItem(item);
                                   },
                           ),
                         ],

@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
-// TODO: Importar el CartProvider y package:provider
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Obtener la lista de items y el total utilizando Provider (context.watch)
-    final cartItems = [];
-    final double totalPrice = 0.0;
+    final cart = context.watch<CartProvider>();
+    final cartItems = cart.items;
+    final double totalPrice = cart.totalPrice;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mi Carrito de Compras'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_sweep),
-            onPressed: () {
-              // TODO: Limpiar carrito utilizando Provider (context.read)
-            },
-            tooltip: 'Vaciar Carrito',
-          ),
+          if (cartItems.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.delete_sweep),
+              onPressed: () {
+                context.read<CartProvider>().clearCart();
+              },
+              tooltip: 'Vaciar Carrito',
+            ),
         ],
       ),
       body: cartItems.isEmpty
@@ -56,7 +58,7 @@ class CartScreen extends StatelessWidget {
                           trailing: IconButton(
                             icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
                             onPressed: () {
-                              // TODO: Remover item del carrito usando Provider
+                              context.read<CartProvider>().removeItem(item);
                             },
                           ),
                         ),
@@ -102,10 +104,11 @@ class CartScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
-                            // Acción simulada de pago
+                            context.read<CartProvider>().clearCart();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Procesando compra...')),
+                              const SnackBar(content: Text('¡Compra realizada con éxito!')),
                             );
+                            Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),

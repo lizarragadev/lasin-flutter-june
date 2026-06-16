@@ -11,39 +11,53 @@ class RecipeViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
-  // Getters públicos
   List<Recipe> get recipes => _filteredRecipes;
   List<Recipe> get favorites => _favorites;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  // TODO: Implementar el método cargarRecetas
-  // 1. Establecer _isLoading = true y llamar a notifyListeners().
-  // 2. Intentar llamar a _recipeService.fetchRecipes().
-  // 3. Almacenar el resultado en _recipes y _filteredRecipes.
-  // 4. Capturar errores y asignar un mensaje en _errorMessage.
-  // 5. Finalizar estableciendo _isLoading = false y llamando a notifyListeners().
   Future<void> loadRecipes() async {
-    // Código aquí
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _recipes = await _recipeService.fetchRecipes();
+      _filteredRecipes = List.from(_recipes);
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // TODO: Implementar el método filtrarRecetas por búsqueda de texto
-  // Debe filtrar la lista _recipes comparando el nombre o ingredientes
-  // con la query escrita y actualizar _filteredRecipes. Luego notificar.
   void filterRecipes(String query) {
-    // Código aquí
+    if (query.isEmpty) {
+      _filteredRecipes = List.from(_recipes);
+    } else {
+      _filteredRecipes = _recipes.where((recipe) {
+        final nameMatches = recipe.name.toLowerCase().contains(query.toLowerCase());
+        final ingredientMatches = recipe.ingredients.any(
+          (ing) => ing.toLowerCase().contains(query.toLowerCase()),
+        );
+        return nameMatches || ingredientMatches;
+      }).toList();
+    }
+    notifyListeners();
   }
 
-  // TODO: Implementar el método alternarFavorito (toggleFavorite)
-  // Agrega o remueve una receta de la lista _favorites.
-  // Verifica si ya existe por ID. Recuerda notificar cambios.
   void toggleFavorite(Recipe recipe) {
-    // Código aquí
+    final isFav = isFavorite(recipe);
+    if (isFav) {
+      _favorites.removeWhere((r) => r.id == recipe.id);
+    } else {
+      _favorites.add(recipe);
+    }
+    notifyListeners();
   }
 
-  // TODO: Crear un método de utilidad isFavorite(Recipe recipe)
-  // Retorna un bool indicando si la receta está en la lista de favoritos.
   bool isFavorite(Recipe recipe) {
-    return false;
+    return _favorites.any((r) => r.id == recipe.id);
   }
 }

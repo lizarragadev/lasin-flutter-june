@@ -5,8 +5,10 @@ import 'views/home_screen.dart';
 
 void main() {
   runApp(
-    // TODO: Proveer el RecipeViewModel a toda la aplicación usando ChangeNotifierProvider
-    const MainApp(),
+    ChangeNotifierProvider(
+      create: (context) => RecipeViewModel(),
+      child: const MainApp(),
+    ),
   );
 }
 

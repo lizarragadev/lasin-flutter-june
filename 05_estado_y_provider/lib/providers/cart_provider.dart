@@ -2,25 +2,26 @@ import 'package:flutter/material.dart';
 import '../models/item.dart';
 
 class CartProvider extends ChangeNotifier {
-  // TODO: Declarar una lista privada de items seleccionados (_items)
-  // TODO: Crear un getter público para obtener la lista inmutable (List<Item>)
-  // TODO: Crear un getter para obtener el precio total sumando los precios de los items
+  final List<Item> _items = [];
 
-  // TODO: Implementar el método para agregar un item a la lista
-  // Recordar llamar a notifyListeners() para notificar a los consumidores
+  List<Item> get items => List.unmodifiable(_items);
+
+  double get totalPrice => _items.fold(0.0, (sum, item) => sum + item.price);
+
   void addItem(Item item) {
-    // Código aquí
+    if (!_items.contains(item)) {
+      _items.add(item);
+      notifyListeners();
+    }
   }
 
-  // TODO: Implementar el método para remover un item de la lista
-  // Recordar llamar a notifyListeners()
   void removeItem(Item item) {
-    // Código aquí
+    _items.remove(item);
+    notifyListeners();
   }
 
-  // TODO: Implementar el método para limpiar el carrito (vaciar lista)
-  // Recordar llamar a notifyListeners()
   void clearCart() {
-    // Código aquí
+    _items.clear();
+    notifyListeners();
   }
 }

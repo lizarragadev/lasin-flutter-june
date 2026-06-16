@@ -13,9 +13,25 @@ class User {
     required this.companyName,
   });
 
-  // TODO: Crear el constructor de fábrica `fromJson` para deserializar el JSON recibido
-  // Pista: Recibe un Map<String, dynamic> json y mapea los campos correspondientes.
-  // Recuerda acceder al nombre de la compañía desde el sub-mapa 'company' -> 'name'.
-  
-  // TODO: Crear el método `toJson` que retorne un Map<String, dynamic>
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      username: json['username'] as String,
+      email: json['email'] as String,
+      companyName: json['company']['name'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'username': username,
+      'email': email,
+      'company': {
+        'name': companyName,
+      },
+    };
+  }
 }
