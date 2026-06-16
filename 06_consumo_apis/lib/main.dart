@@ -34,15 +34,20 @@ class UsersScreen extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<UsersScreen> {
+  // Inicialización de la clase de servicios API
   final ApiService _apiService = ApiService();
+  
+  // Future que contendrá el resultado asíncrono
   late Future<List<User>> _usersFuture;
 
   @override
   void initState() {
     super.initState();
+    // Inicia la petición de red en el initState para que ocurra una sola vez cuando se monte el widget
     _loadUsers();
   }
 
+  // Método que actualiza la variable del Future con una nueva petición para recargar la UI
   void _loadUsers() {
     setState(() {
       _usersFuture = _apiService.fetchUsers();
@@ -57,16 +62,21 @@ class _UsersScreenState extends State<UsersScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loadUsers,
+            onPressed: _loadUsers, // Llama al método para recargar el listado
           )
         ],
       ),
+      // FutureBuilder simplifica el manejo de operaciones asíncronas directamente en la UI.
+      // Se redibuja automáticamente en base al estado del Future provisto (loading, success, error)
       body: FutureBuilder<List<User>>(
-        future: _usersFuture,
+        future: _usersFuture, // Escucha los cambios del Future de usuarios
         builder: (context, snapshot) {
+          // ESTADO 1: Cargando datos (Conexión activa esperando respuesta)
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
+          }
+          // ESTADO 2: Error en la carga (Falló el API o no hay internet)
+          else if (snapshot.hasError) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -76,6 +86,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     const Icon(Icons.error_outline, color: Colors.red, size: 60),
                     const SizedBox(height: 16),
                     Text(
+                      // Remueve la palabra reservada 'Exception: ' para que se vea más estético el error
                       '${snapshot.error}'.replaceAll('Exception: ', ''),
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 16),
@@ -90,10 +101,13 @@ class _UsersScreenState extends State<UsersScreen> {
                 ),
               ),
             );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+          // ESTADO 3: Petición correcta pero los datos regresaron vacíos
+          else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No hay usuarios disponibles.'));
           }
 
+          // ESTADO 4: Petición correcta y contiene datos (snapshot.data)
           final users = snapshot.data!;
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -109,7 +123,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   leading: CircleAvatar(
                     backgroundColor: Colors.teal.shade700,
                     child: Text(
-                      user.name[0],
+                      user.name[0], // Primera letra del nombre para simular avatar circular
                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),

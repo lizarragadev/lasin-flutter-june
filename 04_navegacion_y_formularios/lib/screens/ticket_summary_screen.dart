@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class TicketSummaryScreen extends StatelessWidget {
+  // Parámetros obligatorios declarados como finales (inmutables) que se transfieren desde la pantalla anterior
   final String name;
   final String email;
   final int age;
   final String ticketType;
 
+  // Constructor que inicializa los valores obligatorios requeridos
   const TicketSummaryScreen({
     super.key,
     required this.name,
@@ -15,9 +17,10 @@ class TicketSummaryScreen extends StatelessWidget {
     required this.ticketType,
   });
 
+  // Función interna para simular la creación de un número de confirmación aleatorio
   String _generateConfirmationCode() {
     final rand = Random();
-    final number = rand.nextInt(9000) + 1000;
+    final number = rand.nextInt(9000) + 1000; // Genera un número entero entre 1000 y 9999
     return 'FF-$number';
   }
 
@@ -86,7 +89,11 @@ class TicketSummaryScreen extends StatelessWidget {
             const SizedBox(height: 40),
             ElevatedButton.icon(
               onPressed: () {
+                // Genera el código del ticket
                 final code = _generateConfirmationCode();
+                
+                // Navigator.pop cierra la pantalla actual y regresa a la pantalla anterior en la pila.
+                // Le pasamos 'code' como segundo argumento, el cual será retornado como resultado de la promesa 'await Navigator.push'
                 Navigator.pop(context, code);
               },
               icon: const Icon(Icons.check_circle),

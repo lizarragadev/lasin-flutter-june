@@ -7,6 +7,7 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // context.watch suscribe este widget a los cambios de 'CartProvider' para redibujar la lista y el total acumulado
     final cart = context.watch<CartProvider>();
     final cartItems = cart.items;
     final double totalPrice = cart.totalPrice;
@@ -15,16 +16,19 @@ class CartScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Mi Carrito de Compras'),
         actions: [
+          // Muestra el botón para vaciar el carrito sólo si hay elementos cargados
           if (cartItems.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep),
               onPressed: () {
+                // context.read se usa para invocar el método clearCart sin forzar una suscripción directa en esta función
                 context.read<CartProvider>().clearCart();
               },
               tooltip: 'Vaciar Carrito',
             ),
         ],
       ),
+      // Renderizado condicional: muestra una pantalla vacía o la lista de compras según corresponda
       body: cartItems.isEmpty
           ? Center(
               child: Column(
@@ -58,6 +62,7 @@ class CartScreen extends StatelessWidget {
                           trailing: IconButton(
                             icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
                             onPressed: () {
+                              // Invoca la remoción del ítem específico a través del provider
                               context.read<CartProvider>().removeItem(item);
                             },
                           ),
@@ -104,11 +109,12 @@ class CartScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
+                            // Vacía el carrito antes de cerrar la pantalla actual simulando una compra exitosa
                             context.read<CartProvider>().clearCart();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('¡Compra realizada con éxito!')),
                             );
-                            Navigator.pop(context);
+                            Navigator.pop(context); // Cierra la pantalla
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),

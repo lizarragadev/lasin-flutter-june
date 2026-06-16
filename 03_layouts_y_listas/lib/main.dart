@@ -34,10 +34,12 @@ class CatalogScreen extends StatefulWidget {
 }
 
 class _CatalogScreenState extends State<CatalogScreen> {
+  // Estado que mantiene la categoría seleccionada por el usuario
   String selectedCategory = 'Todos';
 
   @override
   Widget build(BuildContext context) {
+    // Operación ternaria de Dart para filtrar la lista de productos estáticos
     final filteredProducts = selectedCategory == 'Todos'
         ? mockProducts
         : mockProducts.where((p) => p.category == selectedCategory).toList();
@@ -52,17 +54,22 @@ class _CatalogScreenState extends State<CatalogScreen> {
           ),
         ],
       ),
+      // LayoutBuilder proporciona las restricciones (constraints) de tamaño asignadas por el widget padre en tiempo de ejecución.
+      // Esto nos permite tomar decisiones de renderizado adaptativas (responsivas) basadas en el ancho máximo disponible.
       body: LayoutBuilder(
         builder: (context, constraints) {
+          // Determina si la pantalla es ancha (por ejemplo, tablets o pantallas horizontales)
           final isWide = constraints.maxWidth > 600;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Contenedor que delimita la altura para el selector horizontal de categorías
               Container(
                 height: 50,
                 margin: const EdgeInsets.symmetric(vertical: 8),
+                // ListView.builder construye los elementos de forma perezosa (on-demand), ideal para listas largas u optimización de memoria.
                 child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.horizontal, // Dirección del scroll horizontal
                   itemCount: categories.length,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemBuilder: (context, index) {
@@ -70,11 +77,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     final isSelected = cat == selectedCategory;
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
+                      // ChoiceChip representa un botón tipo píldora interactivo con estado de selección
                       child: ChoiceChip(
                         label: Text(cat),
                         selected: isSelected,
                         onSelected: (val) {
                           if (val) {
+                            // Cambia el estado del filtro de categorías, provocando que se repinte la pantalla
                             setState(() {
                               selectedCategory = cat;
                             });
@@ -92,20 +101,23 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
+              // Expanded indica al widget que tome todo el espacio vertical/horizontal sobrante dentro del Flex (Column/Row)
               Expanded(
+                // GridView.builder renderiza los elementos en una malla bidimensional perezosa
                 child: GridView.builder(
                   padding: const EdgeInsets.all(16),
+                  // Controla cómo se distribuyen los elementos en la malla
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: isWide ? 3 : 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.72,
+                    crossAxisCount: isWide ? 3 : 2, // 3 columnas si es ancho, de lo contrario 2 columnas
+                    crossAxisSpacing: 16, // Espaciado horizontal entre elementos
+                    mainAxisSpacing: 16, // Espaciado vertical entre elementos
+                    childAspectRatio: 0.72, // Relación ancho/alto de las tarjetas (aspect ratio)
                   ),
                   itemCount: filteredProducts.length,
                   itemBuilder: (context, index) {
                     final product = filteredProducts[index];
                     return Card(
-                      clipBehavior: Clip.antiAlias,
+                      clipBehavior: Clip.antiAlias, // Recorta las esquinas del hijo para que se adapten a los bordes del Card
                       elevation: 4,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -113,14 +125,17 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          // Expanded toma la mitad superior para la imagen del producto
                           Expanded(
+                            // Stack superpone múltiples elementos hijos uno sobre otro en profundidad (eje Z)
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
                                 Image.network(
                                   product.imageUrl,
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.cover, // Redimensiona la imagen para rellenar el área sin deformar
                                 ),
+                                // Positioned coloca un widget de forma absoluta dentro de las coordenadas de un Stack
                                 Positioned(
                                   top: 8,
                                   right: 8,
@@ -131,7 +146,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisSize: MainAxisSize.min, // Se adapta al tamaño mínimo del contenido
                                       children: [
                                         const Icon(Icons.star, color: Colors.amber, size: 14),
                                         const SizedBox(width: 4),
@@ -163,7 +178,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                 Text(
                                   product.name,
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow: TextOverflow.ellipsis, // Recorta el texto largo y añade puntos suspensivos (...)
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                                 const SizedBox(height: 4),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+// Función principal que inicia la aplicación Flutter
 void main() {
   runApp(const MainApp());
 }
 
+// Widget principal que hereda de StatefulWidget porque controlará el estado del tema (claro/oscuro)
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
@@ -11,10 +13,14 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
+// Estado del widget principal
 class _MainAppState extends State<MainApp> {
+  // Estado local para alternar entre el tema claro u oscuro
   bool _isDarkMode = true;
 
+  // Método encargado de cambiar el estado de la UI
   void _toggleTheme() {
+    // setState notifica al framework que el estado interno ha cambiado y fuerza un rediseño (rebuild) de este widget
     setState(() {
       _isDarkMode = !_isDarkMode;
     });
@@ -24,23 +30,24 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mi Perfil Profesional',
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false, // Oculta la etiqueta de depuración (debug banner)
       theme: ThemeData(
-        useMaterial3: true,
-        brightness: _isDarkMode ? Brightness.dark : Brightness.light,
-        colorSchemeSeed: Colors.teal,
+        useMaterial3: true, // Habilita los estándares de diseño de Material Design 3
+        brightness: _isDarkMode ? Brightness.dark : Brightness.light, // Define el brillo del tema actual
+        colorSchemeSeed: Colors.teal, // Define la paleta de colores basada en un color semilla
       ),
       home: ProfileScreen(
         isDarkMode: _isDarkMode,
-        onThemeChanged: _toggleTheme,
+        onThemeChanged: _toggleTheme, // Pasa la función como callback a la pantalla del perfil
       ),
     );
   }
 }
 
+// Pantalla informativa independiente (StatelessWidget porque no muta internamente, recibe los datos del padre)
 class ProfileScreen extends StatelessWidget {
   final bool isDarkMode;
-  final VoidCallback onThemeChanged;
+  final VoidCallback onThemeChanged; // Callback de tipo función sin argumentos ni retorno
 
   const ProfileScreen({
     super.key,
@@ -51,10 +58,12 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Scaffold proporciona la estructura básica visual de Material Design (AppBar, Drawer, SnackBars, etc.)
       appBar: AppBar(
         title: const Text('Mi Perfil'),
         centerTitle: true,
         actions: [
+          // Botón en la barra superior que ejecuta la función de cambio de tema del widget padre
           IconButton(
             icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
             onPressed: onThemeChanged,
@@ -62,11 +71,15 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       body: Center(
+        // Center centra a su widget hijo horizontal y verticalmente
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          // SingleChildScrollView permite hacer scroll vertical si el contenido supera el tamaño físico de la pantalla
+          padding: const EdgeInsets.all(24.0), // Margen interno uniforme en todos los lados
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            // Column alinea sus widgets hijos uno debajo del otro (verticalmente)
+            mainAxisAlignment: MainAxisAlignment.center, // Centra los hijos verticalmente dentro del Column
             children: [
+              // Avatar circular con borde
               const CircleAvatar(
                 radius: 65,
                 backgroundColor: Colors.teal,
@@ -77,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 20), // SizedBox proporciona una separación vertical/espaciador
               const Text(
                 'Camila Lizárraga',
                 style: TextStyle(
@@ -101,16 +114,18 @@ class ProfileScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
-                  height: 1.4,
+                  height: 1.4, // Interlineado del texto
                 ),
               ),
               const SizedBox(height: 30),
+              // Tarjeta visual (Card) con sombra integrada
               const Card(
-                elevation: 4,
+                elevation: 4, // Nivel de sombra y profundidad de la tarjeta
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    // Row alinea sus widgets hijos uno al lado del otro (horizontalmente)
+                    mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribuye el espacio sobrante entre los widgets
                     children: [
                       Column(
                         children: [
@@ -144,8 +159,9 @@ class ProfileScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Botón elevado principal con un icono integrado
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {}, // Acción vacía por ahora
                     icon: const Icon(Icons.email),
                     label: const Text('Contactar'),
                     style: ElevatedButton.styleFrom(
@@ -153,6 +169,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
+                  // Botón con contorno/borde sin fondo relleno
                   OutlinedButton.icon(
                     onPressed: () {},
                     icon: const Icon(Icons.download),

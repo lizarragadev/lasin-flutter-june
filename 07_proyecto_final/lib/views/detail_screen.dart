@@ -10,6 +10,8 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // context.watch suscribe este widget a los cambios de 'RecipeViewModel'.
+    // Redibuja el botón flotante (icono de corazón) si cambia el estado de favorito.
     final vm = context.watch<RecipeViewModel>();
     final isFav = vm.isFavorite(recipe);
 
@@ -21,6 +23,8 @@ class DetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Widget Hero realiza animaciones de transición fluidas de la imagen
+            // entre dos pantallas diferentes vinculadas por el mismo tag.
             Hero(
               tag: 'recipe-img-${recipe.id}',
               child: Image.network(
@@ -90,6 +94,7 @@ class DetailScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
+                  // Mapea y renderiza el listado de ingredientes
                   ...recipe.ingredients.map((ing) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4.0),
                         child: Row(
@@ -106,6 +111,7 @@ class DetailScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
+                  // Mapea las instrucciones enumeradas utilizando .asMap() para obtener el índice idx
                   ...recipe.instructions.asMap().entries.map((entry) {
                     final idx = entry.key + 1;
                     final step = entry.value;
@@ -134,8 +140,10 @@ class DetailScreen extends StatelessWidget {
           ],
         ),
       ),
+      // Botón flotante para alternar favorito
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          // context.read se usa para invocar el trigger del toggle sin causar suscripción en el método onTap
           context.read<RecipeViewModel>().toggleFavorite(recipe);
         },
         child: Icon(

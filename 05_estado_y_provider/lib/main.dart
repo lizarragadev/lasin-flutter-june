@@ -5,8 +5,11 @@ import 'screens/catalog_screen.dart';
 
 void main() {
   runApp(
+    // ChangeNotifierProvider inicializa el CartProvider y lo pone a disposición de todos
+    // los widgets hijos dentro del árbol. Cualquier widget dentro de 'MainApp' o 'CatalogScreen'
+    // podrá acceder al estado del carrito.
     ChangeNotifierProvider(
-      create: (context) => CartProvider(),
+      create: (context) => CartProvider(), // Crea la instancia única de CartProvider
       child: const MainApp(),
     ),
   );

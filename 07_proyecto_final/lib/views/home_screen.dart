@@ -16,6 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback asegura que la función se ejecute justo
+    // después de que termine de renderizarse el primer frame de este widget.
+    // Esto evita errores al invocar providers o triggers asíncronos antes del build.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RecipeViewModel>().loadRecipes();
     });
@@ -29,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // DefaultTabController administra el estado del TabBar y TabBarView automáticamente
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -43,8 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: TabBarView(
           children: [
+            // TAB 1: Explorar Recetas
             Column(
               children: [
+                // Input de Búsqueda
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: TextField(
@@ -56,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
+                          // Limpia la búsqueda en el ViewModel
                           context.read<RecipeViewModel>().filterRecipes('');
                         },
                       ),
@@ -64,16 +71,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     onChanged: (val) {
+                      // Dispara la búsqueda reactiva en el ViewModel al escribir
                       context.read<RecipeViewModel>().filterRecipes(val);
                     },
                   ),
                 ),
+                // Contenido principal de recetas usando Consumer para reconstruir sólo esta sección
                 Expanded(
                   child: Consumer<RecipeViewModel>(
                     builder: (context, vm, child) {
+                      // Sub-estado 1: Cargando datos
                       if (vm.isLoading) {
                         return const Center(child: CircularProgressIndicator());
                       }
+                      // Sub-estado 2: Error en el llamado
                       if (vm.errorMessage != null) {
                         return Center(
                           child: Padding(
@@ -94,10 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       }
+                      // Sub-estado 3: Lista de recetas vacía (no se hallaron resultados)
                       if (vm.recipes.isEmpty) {
                         return const Center(child: Text('No se encontraron recetas.'));
                       }
 
+                      // Sub-estado 4: Carga de recetas exitosa
                       return ListView.builder(
                         itemCount: vm.recipes.length,
                         itemBuilder: (context, index) {
@@ -134,8 +147,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
+            
+            // TAB 2: Mis Favoritas
             Consumer<RecipeViewModel>(
               builder: (context, vm, child) {
+                // Si no tiene favoritas añadidas
                 if (vm.favorites.isEmpty) {
                   return const Center(
                     child: Column(
@@ -149,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
 
+                // Renderiza la lista de favoritas del usuario
                 return ListView.builder(
                   itemCount: vm.favorites.length,
                   itemBuilder: (context, index) {
