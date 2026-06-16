@@ -1,0 +1,70 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate.log
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The Directory-specific metadata:
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+**/.idea/assets.xml
+**/.idea/datasources.xml
+**/.idea/dataSources.xml
+**/.idea/dataSources.list
+**/.idea/sqlDataSources.xml
+**/.idea/dynamic.xml
+**/.idea/uiDesigner.xml
+**/.idea/gradle.xml
+**/.idea/compiler.xml
+**/.idea/misc.xml
+**/.idea/modules.xml
+**/.idea/libraries/
+**/.idea/copilot/
+
+# Visual Studio Code related
+.vscode/
+
+# Flutter/Dart related
+**/.dart_tool/
+**/flutter_bootstrapped/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/lib/generated_plugin_registrant.dart
+
+# Android related
+**/android/app/key.properties
+**/android/local.properties
+
+# iOS related
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Runner/GeneratedPluginRegistrant.h
+**/ios/Runner/GeneratedPluginRegistrant.m
+
+# macOS related
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Windows related
+**/windows/flutter/generated_plugin_registrant.h
+**/windows/flutter/generated_plugin_registrant.cc
+
+# Linux related
+**/linux/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugin_registrant.cc
+
+# Web related
+**/web/flutter_service_worker.js
