@@ -19,6 +19,7 @@ void main() async {
 
   nombreNulable = 'Carlos';
   print('Longitud: ${nombreNulable.length}');
+  // ignore: unnecessary_non_null_assertion
   print('Llamada forzada: ${nombreNulable!}');
 
   print('\n=== EJERCICIO 3: Funciones ===');

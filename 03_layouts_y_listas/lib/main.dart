@@ -103,7 +103,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   ),
                   itemCount: filteredProducts.length,
                   itemBuilder: (context, index) {
-                    final product = filteredProducts[index];
+                    final Product product = filteredProducts[index];
                     return Card(
                       clipBehavior: Clip.antiAlias,
                       elevation: 4,
@@ -175,7 +175,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.between,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       '\$${product.price.toStringAsFixed(2)}',
