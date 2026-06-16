@@ -27,6 +27,7 @@ void main() async {
   // Acceso seguro: no da error porque ya tiene asignado un valor
   print('Longitud: ${nombreNulable.length}');
   // Operador '!' (aserción de no nulo): le asegura a Dart que la variable no es nula bajo nuestro propio riesgo
+  // ignore: unnecessary_non_null_assertion
   print('Llamada forzada: ${nombreNulable!}');
 
   print('\n=== EJERCICIO 3: Funciones ===');

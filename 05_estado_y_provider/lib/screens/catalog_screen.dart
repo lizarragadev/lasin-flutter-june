@@ -53,7 +53,7 @@ class CatalogScreen extends StatelessWidget {
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
-                      textAlign: Alignment.center,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 )
@@ -106,7 +106,7 @@ class CatalogScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.between,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             '\$${item.price.toStringAsFixed(2)}',
