@@ -1,5 +1,22 @@
 import '../models/product.dart';
 
+/// Fuente de datos de prueba (Mock Data) para la aplicación.
+/// 
+/// TEORÍA SOBRE DATOS DE PRUEBA (MOCKS) Y CONSTANTES EN DART:
+/// En el desarrollo de software, los "Mocks" o datos simulados son representaciones estáticas
+/// de la información real que eventualmente provendrá de un servicio externo (como una base de datos local
+/// o una API REST en la nube). Utilizar mocks permite avanzar en el diseño y maquetación de la interfaz de usuario (UI)
+/// de manera independiente, sin depender de la conectividad de red o la disponibilidad del Backend.
+/// 
+/// Conceptos clave utilizados aquí:
+/// 1. **Inmutabilidad Global (`const`)**:
+///    La directiva `const` al declarar la variable `mockProducts` indica que esta lista es una constante
+///    definida en tiempo de compilación. Dart la almacena en un sector de memoria de solo lectura de forma fija.
+///    Cualquier intento de añadir (`.add()`), eliminar (`.remove()`) o modificar sus elementos lanzará un error,
+///    protegiendo la integridad y previsibilidad de los datos en toda la aplicación.
+/// 2. **Tipado Genérico (`List<Product>`)**:
+///    Indica al compilador que esta colección es una lista que únicamente puede almacenar instancias del modelo [Product].
+///    Esto impide mezclar de forma errónea otros tipos de datos (como números, textos o listas anidadas) dentro de la colección.
 const List<Product> mockProducts = [
   Product(
     id: '1',
@@ -57,4 +74,7 @@ const List<Product> mockProducts = [
   ),
 ];
 
+/// Listado de categorías disponibles en el catálogo de productos.
+/// Sirve como referencia estática para construir dinámicamente las pestañas de selección de la barra superior.
+/// Se incluye la opción 'Todos' para anular cualquier filtro activo y recuperar la visualización de la lista completa.
 const List<String> categories = ['Todos', 'Accesorios', 'Audio', 'Wearables'];
