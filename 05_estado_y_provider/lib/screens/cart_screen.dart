@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-// TODO: Importar el CartProvider y package:provider
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Obtener la lista de items y el total utilizando Provider (context.watch)
-    final cartItems = [];
-    final double totalPrice = 0.0;
+    // TODO: Obtener el listado del carrito y total a pagar usando Provider
+    final List<dynamic> cartItems = [];
+    const double totalPrice = 0.0;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mi Carrito de Compras'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_sweep),
-            onPressed: () {
-              // TODO: Limpiar carrito utilizando Provider (context.read)
-            },
-            tooltip: 'Vaciar Carrito',
-          ),
+          if (cartItems.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.delete_sweep),
+              onPressed: () {
+                // TODO: Vaciar carrito usando Provider
+              },
+              tooltip: 'Vaciar Carrito',
+            ),
         ],
       ),
       body: cartItems.isEmpty
@@ -56,7 +56,7 @@ class CartScreen extends StatelessWidget {
                           trailing: IconButton(
                             icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
                             onPressed: () {
-                              // TODO: Remover item del carrito usando Provider
+                              // TODO: Eliminar elemento del carrito usando Provider
                             },
                           ),
                         ),
@@ -71,7 +71,7 @@ class CartScreen extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: const Color(0x33000000),
                         blurRadius: 10,
                         offset: const Offset(0, -5),
                       ),
@@ -83,7 +83,7 @@ class CartScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.between,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
                               'Total a Pagar:',
@@ -102,10 +102,7 @@ class CartScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
-                            // Acción simulada de pago
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Procesando compra...')),
-                            );
+                            // TODO: Limpiar carrito y navegar hacia atrás
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),

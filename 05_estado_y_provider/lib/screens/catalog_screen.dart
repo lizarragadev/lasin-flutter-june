@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/item.dart';
-// TODO: Importar el CartProvider y package:provider
-// TODO: Importar la pantalla del Carrito (cart_screen.dart)
 
 class CatalogScreen extends StatelessWidget {
   const CatalogScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Obtener el conteo de items del carrito utilizando Provider (context.watch o Consumer)
-    final int cartItemCount = 0;
+    // TODO: Escuchar los cambios del carrito usando Provider
+    const int cartItemCount = 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -21,7 +19,7 @@ class CatalogScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  // TODO: Navegar a la pantalla de Carrito (CartScreen)
+                  // TODO: Navegar usando rutas nombradas
                 },
               ),
               if (cartItemCount > 0)
@@ -45,7 +43,7 @@ class CatalogScreen extends StatelessWidget {
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
-                      textAlign: Alignment.center,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 )
@@ -65,8 +63,8 @@ class CatalogScreen extends StatelessWidget {
         itemCount: mockItems.length,
         itemBuilder: (context, index) {
           final item = mockItems[index];
-          // TODO: Determinar si el item ya está en el carrito para deshabilitar el botón
-          final bool isInCart = false;
+          // ignore: unused_local_variable
+          const bool isInCart = false;
 
           return Card(
             elevation: 4,
@@ -77,7 +75,7 @@ class CatalogScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: item.color.withOpacity(0.2),
+                      color: item.color.withAlpha(51),
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                     ),
                     child: Icon(
@@ -98,7 +96,7 @@ class CatalogScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.between,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             '\$${item.price.toStringAsFixed(2)}',
@@ -108,15 +106,13 @@ class CatalogScreen extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(
-                              isInCart ? Icons.check_circle : Icons.add_circle,
-                              color: isInCart ? Colors.green : Colors.blue,
+                            icon: const Icon(
+                              Icons.add_circle,
+                              color: Colors.blue,
                             ),
-                            onPressed: isInCart
-                                ? null
-                                : () {
-                                    // TODO: Llamar al Provider para agregar el item (context.read)
-                                  },
+                            onPressed: () {
+                              // TODO: Añadir elemento al carrito usando Provider
+                            },
                           ),
                         ],
                       ),

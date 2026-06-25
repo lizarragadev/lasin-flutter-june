@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/catalog_screen.dart';
-// TODO: Importar Provider y CartProvider
+import 'routes/app_routes.dart';
 
 void main() {
-  // TODO: Envolver la aplicación con ChangeNotifierProvider
+  // TODO: Envolver la app en el ChangeNotifierProvider
   runApp(const MainApp());
 }
 
@@ -22,7 +21,8 @@ class MainApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      home: const CatalogScreen(),
+      initialRoute: AppRoutes.catalog,
+      routes: AppRoutes.getRoutes(),
     );
   }
 }
