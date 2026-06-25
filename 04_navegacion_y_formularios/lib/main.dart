@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/event_form_screen.dart';
+import 'routes/app_routes.dart';
 
 void main() {
   runApp(const MainApp());
@@ -20,7 +20,12 @@ class MainApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      home: const EventFormScreen(),
+      
+      // TEORÍA SOBRE PROPIEDADES DE RUTAS EN MATERIALAPP:
+      // - [initialRoute]: Define el String de la ruta por donde arranca la aplicación (reemplaza a la propiedad 'home').
+      // - [routes]: Recibe un mapa de tipo Map<String, WidgetBuilder> que asocia cada ruta nombrada con su pantalla.
+      initialRoute: AppRoutes.home,
+      routes: AppRoutes.getRoutes(),
     );
   }
 }

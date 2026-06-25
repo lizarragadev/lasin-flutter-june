@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'ticket_summary_screen.dart';
+import '../models/registration_model.dart';
+import '../routes/app_routes.dart';
 
 class EventFormScreen extends StatefulWidget {
   const EventFormScreen({super.key});
@@ -9,10 +10,20 @@ class EventFormScreen extends StatefulWidget {
 }
 
 class _EventFormScreenState extends State<EventFormScreen> {
-  // GlobalKey identifica de forma única a este formulario y nos permite acceder a su estado (validaciones, guardar valores)
+  // TEORÍA SOBRE GLOBALKEY Y FORMSTATE:
+  // [GlobalKey] es una clave única en toda la aplicación. Al tiparla como GlobalKey<FormState>,
+  // nos permite obtener una referencia directa al estado del widget [Form] desde fuera de su árbol local.
+  // Es indispensable para llamar a métodos como validate(), save() o reset() en eventos de botón.
   final _formKey = GlobalKey<FormState>();
-  
-  // TextEditingControllers permiten controlar, leer y modificar el texto dentro de los campos de texto
+
+  // TEORÍA SOBRE TEXTEDITINGCONTROLLERS:
+  // Un [TextEditingController] es un objeto controlador que se asocia a un campo de texto (TextField/TextFormField).
+  // Se encarga de:
+  // 1. Escuchar y almacenar los cambios del texto introducido en tiempo real.
+  // 2. Permitir leer el valor actual mediante '.text'.
+  // 3. Permitir modificar el texto por código (ej. limpiar el campo).
+  // NOTA DE DESEMPEÑO: Los controladores consumen recursos y listeners del sistema operativo.
+  // Es obligatorio liberarlos en el método [dispose] para prevenir fugas de memoria (memory leaks).
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _ageController = TextEditingController();
@@ -21,44 +32,48 @@ class _EventFormScreenState extends State<EventFormScreen> {
   final List<String> _tickets = ['General', 'VIP', 'Backstage Access'];
   String? _confirmationCode;
 
-  // Método de ciclo de vida del Widget que destruye los controladores para liberar la memoria del teléfono al salir
   @override
   void dispose() {
+    // Liberación de recursos del sistema al destruir el estado de la pantalla.
     _nameController.dispose();
     _emailController.dispose();
     _ageController.dispose();
     super.dispose();
   }
 
-  // Método asíncrono para enviar el formulario y esperar el código del ticket retornado
+  /// Procesa la lógica de validación, empaquetado de datos y navegación.
   void _submitForm() async {
-    // Evalúa si todos los validadores de los TextFormField retornaron null (sin errores)
+    // TEORÍA DE VALIDACIÓN DE FORMULARIOS:
+    // El método 'validate()' dispara automáticamente la función 'validator' de cada uno
+    // de los TextFormFields que están anidados dentro de nuestro widget Form.
+    // Retorna true únicamente si todos los validators retornan null (es decir, ningún error).
     if (_formKey.currentState!.validate()) {
-      final name = _nameController.text;
-      final email = _emailController.text;
-      final age = int.parse(_ageController.text);
-
-      // Navigator.push empuja una nueva ruta (pantalla) sobre la pila de navegación del usuario.
-      // Retorna un Future porque esperamos que la pantalla destino haga un 'pop' y devuelva un String.
-      final result = await Navigator.push<String>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TicketSummaryScreen(
-            name: name,
-            email: email,
-            age: age,
-            ticketType: _selectedTicket,
-          ),
-        ),
+      // Empaquetamos la información recolectada del texto crudo de los controladores.
+      final registration = RegistrationModel(
+        name: _nameController.text,
+        email: _emailController.text,
+        age: int.parse(_ageController.text),
+        ticketType: _selectedTicket,
       );
 
-      // Si se devolvió un código (no es nulo) y el widget sigue montado en el árbol (mounted)
+      // TEORÍA DE NAVEGACIÓN Y RETORNO DE DATOS:
+      // - [Navigator.pushNamed]: Cambia de pantalla cargando la ruta nombrada.
+      // - [arguments]: Parámetro que permite enviar cualquier tipo de objeto como argumento a la ruta de destino.
+      // - [await]: Esperamos de forma asíncrona a que la pantalla destino se cierre. Si la pantalla destino
+      //   retorna un valor mediante 'Navigator.pop(context, valor)', este método lo capturará aquí.
+      final result = await Navigator.pushNamed<dynamic>(
+        context,
+        AppRoutes.summary,
+        arguments: registration,
+      );
+
+      // Si el usuario confirmó el ticket, recibimos el código de confirmación.
       if (result != null && mounted) {
         setState(() {
-          _confirmationCode = result; // Guarda el código de confirmación del ticket
+          _confirmationCode = result as String;
         });
         
-        // Resetea visualmente el formulario y limpia físicamente los controladores de texto
+        // Limpiamos los estados internos del Form y de los controladores de texto.
         _formKey.currentState!.reset();
         _nameController.clear();
         _emailController.clear();
@@ -76,7 +91,8 @@ class _EventFormScreenState extends State<EventFormScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey, // Vincula la llave única al Formulario
+          // Asociamos la clave única para controlar este formulario
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -111,7 +127,12 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Campo para el nombre
+              
+              // TEORÍA SOBRE TEXTFORMFIELD Y VALIDATOR:
+              // A diferencia de TextField, [TextFormField] se integra de manera nativa con el widget [Form].
+              // - [validator]: Callback de tipo String? Function(String?). Si retorna un mensaje,
+              //   Flutter lo dibuja automáticamente abajo del campo en color rojo y bloquea el submit del Form.
+              //   Si retorna null, indica que el valor introducido es correcto.
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
@@ -119,7 +140,6 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(),
                 ),
-                // Callback de validación. Retorna un mensaje de error si no es válido, o null si está bien
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return 'El nombre es obligatorio';
@@ -128,10 +148,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              // Campo para el email
+              
               TextFormField(
                 controller: _emailController,
-                keyboardType: TextInputType.emailAddress, // Muestra el teclado con símbolo '@'
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   labelText: 'Correo electrónico',
                   prefixIcon: Icon(Icons.email),
@@ -141,7 +161,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   if (val == null || val.isEmpty) {
                     return 'El correo es obligatorio';
                   }
-                  // Expresión regular estándar para verificar formato de email
+                  // Validación mediante expresiones regulares (Regex)
                   final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
                   if (!emailRegex.hasMatch(val)) {
                     return 'Introduce un correo válido';
@@ -150,10 +170,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              // Campo para la edad
+              
               TextFormField(
                 controller: _ageController,
-                keyboardType: TextInputType.number, // Muestra teclado numérico
+                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: 'Edad',
                   prefixIcon: Icon(Icons.cake),
@@ -174,9 +194,9 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              // Formulario desplegable (Dropdown)
+              
               DropdownButtonFormField<String>(
-                value: _selectedTicket,
+                initialValue: _selectedTicket,
                 decoration: const InputDecoration(
                   labelText: 'Tipo de Entrada',
                   prefixIcon: Icon(Icons.confirmation_number),
@@ -194,6 +214,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 },
               ),
               const SizedBox(height: 24),
+              
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
@@ -202,13 +223,13 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 ),
                 child: const Text('Iniciar Registro', style: TextStyle(fontSize: 16)),
               ),
-              // Si ya se generó un código de confirmación de ticket, se dibuja esta sección de éxito
+              
               if (_confirmationCode != null) ...[
                 const SizedBox(height: 24),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade900.withOpacity(0.3),
+                    color: const Color(0x4D1B5E20), // Color verde oscuro traslúcido.
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.green),
                   ),

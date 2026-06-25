@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/item.dart';
 import '../providers/cart_provider.dart';
-import 'cart_screen.dart';
+import '../routes/app_routes.dart';
 
 class CatalogScreen extends StatelessWidget {
   const CatalogScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // context.watch<T>() suscribe este widget a los cambios de 'CartProvider'.
-    // Cada vez que el provider llame a 'notifyListeners()', este método build se volverá a ejecutar (rebuild).
-    // Es ideal para leer datos que se van a pintar directamente en la UI.
+    // TEORÍA SOBRE CONTEXT.WATCH Y CONTEXT.READ:
+    // En el paquete 'provider', el acceso al estado se puede realizar de dos formas principales:
+    //
+    // 1. [context.watch<T>()]: 
+    //    Establece una suscripción activa entre este widget y el proveedor de estado (CartProvider).
+    //    Si el CartProvider invoca 'notifyListeners()', este método 'build' volverá a ejecutarse por completo.
+    //    Es ideal para leer valores que queremos mostrar en pantalla y actualizar automáticamente (como el número de ítems).
     final cart = context.watch<CartProvider>();
     final int cartItemCount = cart.items.length;
 
@@ -25,13 +29,13 @@ class CatalogScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  Navigator.push(
+                  // Navegación mediante ruta nombrada.
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(builder: (context) => const CartScreen()),
+                    AppRoutes.cart,
                   );
                 },
               ),
-              // Dibuja un círculo indicador rojo sólo si hay productos dentro del carrito
               if (cartItemCount > 0)
                 Positioned(
                   right: 8,
@@ -73,7 +77,6 @@ class CatalogScreen extends StatelessWidget {
         itemCount: mockItems.length,
         itemBuilder: (context, index) {
           final item = mockItems[index];
-          // Comprueba si el ítem ya está agregado al carrito para saber si deshabilitar el botón
           final bool isInCart = cart.items.contains(item);
 
           return Card(
@@ -85,7 +88,7 @@ class CatalogScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: item.color.withOpacity(0.2),
+                      color: item.color.withAlpha(51),
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                     ),
                     child: Icon(
@@ -120,13 +123,15 @@ class CatalogScreen extends StatelessWidget {
                               isInCart ? Icons.check_circle : Icons.add_circle,
                               color: isInCart ? Colors.green : Colors.blue,
                             ),
-                            // Si el producto está en el carrito, onPressed se define como null (deshabilita el botón)
                             onPressed: isInCart
                                 ? null
                                 : () {
-                                    // context.read<T>() obtiene la instancia del Provider pero SIN suscribirse a los cambios.
-                                    // Se debe usar SIEMPRE dentro de métodos/eventos (onPressed, onTap) para llamar acciones.
-                                    // Esto optimiza el rendimiento porque evita redibujos innecesarios al presionar botones.
+                                    // TEORÍA SOBRE CONTEXT.READ<T>():
+                                    // 2. [context.read<T>()]:
+                                    //    Obtiene una referencia al CartProvider de manera estática, SIN suscribirse
+                                    //    a futuras notificaciones. El widget no volverá a reconstruirse si los datos cambian.
+                                    //    Es una regla fundamental usar context.read() dentro de callbacks de eventos (como onPressed)
+                                    //    para realizar acciones o disparar métodos del proveedor, optimizando el rendimiento.
                                     context.read<CartProvider>().addItem(item);
                                   },
                           ),

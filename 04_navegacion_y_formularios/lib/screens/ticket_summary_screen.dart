@@ -1,31 +1,26 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import '../models/registration_model.dart';
 
 class TicketSummaryScreen extends StatelessWidget {
-  // Parámetros obligatorios declarados como finales (inmutables) que se transfieren desde la pantalla anterior
-  final String name;
-  final String email;
-  final int age;
-  final String ticketType;
+  const TicketSummaryScreen({super.key});
 
-  // Constructor que inicializa los valores obligatorios requeridos
-  const TicketSummaryScreen({
-    super.key,
-    required this.name,
-    required this.email,
-    required this.age,
-    required this.ticketType,
-  });
-
-  // Función interna para simular la creación de un número de confirmación aleatorio
+  /// Genera un código de confirmación simulado.
   String _generateConfirmationCode() {
     final rand = Random();
-    final number = rand.nextInt(9000) + 1000; // Genera un número entero entre 1000 y 9999
+    final number = rand.nextInt(9000) + 1000;
     return 'FF-$number';
   }
 
   @override
   Widget build(BuildContext context) {
+    // TEORÍA SOBRE LA RECUPERACIÓN DE ARGUMENTOS EN RUTAS NOMBRADAS:
+    // [ModalRoute.of(context)] accede a la configuración de la ruta actual desde el árbol de elementos.
+    // Mediante [.settings.arguments] obtenemos el objeto genérico enviado en el 'Navigator.pushNamed'.
+    // El casteo mediante 'as RegistrationModel' es una aserción fuerte que le dice al analizador estático
+    // de Dart que trate el objeto genérico con la firma del modelo, dándonos acceso inmediato a sus propiedades.
+    final registration = ModalRoute.of(context)!.settings.arguments as RegistrationModel;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resumen del Ticket'),
@@ -64,7 +59,7 @@ class TicketSummaryScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            ticketType.toUpperCase(),
+                            registration.ticketType.toUpperCase(),
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                         )
@@ -73,27 +68,29 @@ class TicketSummaryScreen extends StatelessWidget {
                     const Divider(height: 32),
                     const Text('Asistente:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(registration.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
                     const Text('Correo:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text(email, style: const TextStyle(fontSize: 16)),
+                    Text(registration.email, style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 16),
                     const Text('Edad:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text('$age años', style: const TextStyle(fontSize: 16)),
+                    Text('${registration.age} años', style: const TextStyle(fontSize: 16)),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 40),
+            
             ElevatedButton.icon(
               onPressed: () {
-                // Genera el código del ticket
                 final code = _generateConfirmationCode();
                 
-                // Navigator.pop cierra la pantalla actual y regresa a la pantalla anterior en la pila.
-                // Le pasamos 'code' como segundo argumento, el cual será retornado como resultado de la promesa 'await Navigator.push'
+                // TEORÍA SOBRE NAVIGATOR.POP:
+                // [Navigator.pop] desapila la pantalla actual del stack del navegador (cierra la pantalla).
+                // El segundo argumento opcional (en este caso, 'code') es el valor que se le devuelve como respuesta
+                // a la pantalla que la llamó (la cual estaba en espera usando 'await').
                 Navigator.pop(context, code);
               },
               icon: const Icon(Icons.check_circle),

@@ -1,42 +1,43 @@
 import 'package:flutter/material.dart';
 import '../models/item.dart';
 
-// La clase hereda de 'ChangeNotifier', lo que le permite publicar notificaciones
-// a cualquier widget que esté escuchando (subscrito) a sus cambios.
+/// Clase proveedora del estado del carrito de compras.
+/// 
+/// TEORÍA SOBRE CHANGENOTIFIER:
+/// [ChangeNotifier] es una clase simple incluida en el SDK de Flutter que provee notificaciones de cambio a sus suscriptores.
+/// Al heredar de ChangeNotifier, obtenemos el método [notifyListeners].
+/// Cuando mutamos los datos internos del carrito (como agregar o quitar productos), llamamos a [notifyListeners()]
+/// para indicarle al paquete 'provider' que reconstruya todos los widgets que estén "escuchando" o consumiendo este estado.
 class CartProvider extends ChangeNotifier {
-  // Lista interna privada de productos en el carrito para evitar que sea modificada desde afuera directamente
+  // Lista privada mutable de elementos en el carrito.
   final List<Item> _items = [];
 
-  // Getter público que expone una lista inmutable (de sólo lectura) utilizando List.unmodifiable
+  // Exponemos la lista como inmutable para asegurar que nadie modifique los datos
+  // fuera de los métodos autorizados de esta clase (Encapsulamiento).
   List<Item> get items => List.unmodifiable(_items);
 
-  // Getter que calcula el precio acumulado de todos los ítems usando la función de reducción 'fold'
+  /// Calcula dinámicamente la sumatoria de precios de los elementos en el carrito.
   double get totalPrice => _items.fold(0.0, (sum, item) => sum + item.price);
 
-  // Método para agregar un producto al carrito
+  /// Agrega un elemento al carrito si no existe previamente y notifica el cambio.
   void addItem(Item item) {
     if (!_items.contains(item)) {
       _items.add(item);
-      
-      // notifyListeners() es CRÍTICO: le dice a todos los widgets que estén suscritos (como badges de carrito,
-      // listas o botones) que deben redibujarse inmediatamente porque los datos del modelo acaban de cambiar.
+      // Al llamar a notifyListeners, todos los widgets suscritos (como el badge en CatalogScreen
+      // o la lista de CartScreen) volverán a ejecutar sus métodos 'build' con el nuevo estado.
       notifyListeners();
     }
   }
 
-  // Método para eliminar un producto del carrito
+  /// Remueve un elemento del carrito y notifica el cambio.
   void removeItem(Item item) {
     _items.remove(item);
-    
-    // Notifica el cambio a la UI para que se redibujen las listas y el total a pagar
     notifyListeners();
   }
 
-  // Método para vaciar el carrito
+  /// Vacía por completo el listado del carrito.
   void clearCart() {
     _items.clear();
-    
-    // Notifica que el carrito quedó vacío
     notifyListeners();
   }
 }
