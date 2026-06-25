@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/registration_model.dart';
 import '../routes/app_routes.dart';
 
@@ -93,6 +94,12 @@ class _EventFormScreenState extends State<EventFormScreen> {
         child: Form(
           // Asociamos la clave única para controlar este formulario
           key: _formKey,
+          // TEORÍA SOBRE AUTOVALIDATEMODE:
+          // [autovalidateMode] determina cuándo se deben disparar los validadores del formulario.
+          // - [AutovalidateMode.disabled]: (Por defecto) Solo valida cuando llamamos a _formKey.currentState!.validate().
+          // - [AutovalidateMode.onUserInteraction]: Valida los campos en tiempo real de forma dinámica
+          //   tan pronto como el usuario interactúa por primera vez con cada widget individual.
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -133,8 +140,17 @@ class _EventFormScreenState extends State<EventFormScreen> {
               // - [validator]: Callback de tipo String? Function(String?). Si retorna un mensaje,
               //   Flutter lo dibuja automáticamente abajo del campo en color rojo y bloquea el submit del Form.
               //   Si retorna null, indica que el valor introducido es correcto.
+              // TEORÍA SOBRE INPUTFORMATTERS Y MAXLENGTH:
+              // - [maxLength]: Limita físicamente la longitud del texto y dibuja un contador integrado.
+              // - [inputFormatters]: Lista de formateadores que interceptan el flujo de entrada de texto.
+              //   [FilteringTextInputFormatter.allow] filtra caracteres a nivel de sistema operativo antes
+              //   de que lleguen al controlador, impidiendo que el usuario tipee números o símbolos no deseados.
               TextFormField(
                 controller: _nameController,
+                maxLength: 50,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]')),
+                ],
                 decoration: const InputDecoration(
                   labelText: 'Nombre completo',
                   prefixIcon: Icon(Icons.person),
@@ -165,6 +181,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
+                maxLength: 100,
                 decoration: const InputDecoration(
                   labelText: 'Correo electrónico',
                   prefixIcon: Icon(Icons.email),
@@ -192,6 +209,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
               TextFormField(
                 controller: _ageController,
                 keyboardType: TextInputType.number,
+                maxLength: 3,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 decoration: const InputDecoration(
                   labelText: 'Edad',
                   prefixIcon: Icon(Icons.cake),
