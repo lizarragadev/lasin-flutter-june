@@ -109,6 +109,16 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   if (val == null || val.trim().isEmpty) {
                     return 'El nombre es obligatorio';
                   }
+                  if (val.trim().length < 3) {
+                    return 'El nombre debe tener al menos 3 caracteres';
+                  }
+                  if (val.trim().length > 50) {
+                    return 'El nombre no puede exceder los 50 caracteres';
+                  }
+                  final nameRegex = RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$');
+                  if (!nameRegex.hasMatch(val)) {
+                    return 'El nombre solo debe contener letras';
+                  }
                   return null;
                 },
               ),
@@ -124,6 +134,9 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return 'El correo es obligatorio';
+                  }
+                  if (val.length > 100) {
+                    return 'El correo no puede exceder los 100 caracteres';
                   }
                   final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
                   if (!emailRegex.hasMatch(val)) {
@@ -145,12 +158,18 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   if (val == null || val.isEmpty) {
                     return 'La edad es obligatoria';
                   }
+                  if (val.length > 3) {
+                    return 'La edad no es válida';
+                  }
                   final age = int.tryParse(val);
                   if (age == null) {
-                    return 'Introduce un número válido';
+                    return 'Introduce un número entero válido';
                   }
                   if (age < 18) {
                     return 'Debes ser mayor de 18 años para registrarte';
+                  }
+                  if (age > 100) {
+                    return 'Introduce una edad realista (menor a 100)';
                   }
                   return null;
                 },
