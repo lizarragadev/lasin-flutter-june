@@ -19,7 +19,7 @@ class CatalogScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  // TODO: Navegar usando rutas nombradas
+                  // TODO: Navegar a la pantalla del carrito
                 },
               ),
               if (cartItemCount > 0)

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'routes/app_routes.dart';
+import 'screens/event_form_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -20,8 +20,7 @@ class MainApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      initialRoute: AppRoutes.home,
-      routes: AppRoutes.getRoutes(),
+      home: const EventFormScreen(),
     );
   }
 }

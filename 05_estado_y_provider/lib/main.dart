@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'routes/app_routes.dart';
+import 'screens/catalog_screen.dart';
 
 void main() {
   // TODO: Envolver la app en el ChangeNotifierProvider
@@ -21,8 +21,7 @@ class MainApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      initialRoute: AppRoutes.catalog,
-      routes: AppRoutes.getRoutes(),
+      home: const CatalogScreen(),
     );
   }
 }
