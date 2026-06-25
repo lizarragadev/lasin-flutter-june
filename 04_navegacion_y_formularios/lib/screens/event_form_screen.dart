@@ -141,8 +141,21 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (val) {
+                  // Validación de presencia
                   if (val == null || val.trim().isEmpty) {
                     return 'El nombre es obligatorio';
+                  }
+                  // Validación de longitud mínima y máxima para evitar desbordamiento visual
+                  if (val.trim().length < 3) {
+                    return 'El nombre debe tener al menos 3 caracteres';
+                  }
+                  if (val.trim().length > 50) {
+                    return 'El nombre no puede exceder los 50 caracteres';
+                  }
+                  // Validación de tipo de dato mediante expresión regular: solo letras y espacios
+                  final nameRegex = RegExp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$');
+                  if (!nameRegex.hasMatch(val)) {
+                    return 'El nombre solo debe contener letras';
                   }
                   return null;
                 },
@@ -158,10 +171,15 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (val) {
+                  // Validación de presencia
                   if (val == null || val.isEmpty) {
                     return 'El correo es obligatorio';
                   }
-                  // Validación mediante expresiones regulares (Regex)
+                  // Validación de longitud máxima permitida en base de datos estándar
+                  if (val.length > 100) {
+                    return 'El correo no puede exceder los 100 caracteres';
+                  }
+                  // Validación de tipo de dato y estructura mediante expresión regular (Regex)
                   final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
                   if (!emailRegex.hasMatch(val)) {
                     return 'Introduce un correo válido';
@@ -180,15 +198,25 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (val) {
+                  // Validación de presencia
                   if (val == null || val.isEmpty) {
                     return 'La edad es obligatoria';
                   }
+                  // Validación de longitud (máximo 3 dígitos)
+                  if (val.length > 3) {
+                    return 'La edad no es válida';
+                  }
+                  // Validación de tipo de dato numérico entero mediante tryParse
                   final age = int.tryParse(val);
                   if (age == null) {
-                    return 'Introduce un número válido';
+                    return 'Introduce un número entero válido';
                   }
+                  // Validación de rango lógico de edad para el registro
                   if (age < 18) {
                     return 'Debes ser mayor de 18 años para registrarte';
+                  }
+                  if (age > 100) {
+                    return 'Introduce una edad realista (menor a 100)';
                   }
                   return null;
                 },
