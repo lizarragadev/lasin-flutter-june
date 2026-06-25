@@ -75,7 +75,6 @@ class TicketSummaryScreen extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () {
                 // TODO: Generar código de confirmación y retornarlo al cerrar pantalla
-                Navigator.pop(context);
               },
               icon: const Icon(Icons.check_circle),
               label: const Text('Confirmar Entrada'),
