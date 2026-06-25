@@ -10,12 +10,19 @@ import '../screens/ticket_summary_screen.dart';
 /// definimos identificadores de texto estáticos (String keys) y los asociamos a constructores de widgets.
 /// Esto facilita el mantenimiento, la navegación profunda y el enrutamiento dinámico en aplicaciones medianas/grandes.
 class AppRoutes {
-  // Identificadores de texto para las pantallas.
-  // Por convención, la ruta inicial siempre es '/'
+  // TEORÍA SOBRE PROPIEDADES ESTÁTICAS Y CONSTANTES:
+  // - [static]: Hace que la variable pertenezca a la clase en sí y no a sus instancias. Se accede mediante 'AppRoutes.home'.
+  // - [const]: Compilado en tiempo de construcción, garantizando que el String sea inmutable y altamente eficiente.
+  // Por convención, la ruta inicial o pantalla de inicio de una aplicación Flutter siempre se define como '/'
   static const String home = '/';
   static const String summary = '/summary';
 
   /// Retorna el mapa de rutas requerido por la propiedad 'routes' de MaterialApp.
+  /// 
+  /// TEORÍA SOBRE MAPAS Y WIDGETBUILDER:
+  /// Retorna un mapa `Map<String, WidgetBuilder>` donde:
+  /// - `String` es la ruta clave (ej. '/summary').
+  /// - `WidgetBuilder` es una función anónima `Widget Function(BuildContext)` encargada de instanciar la pantalla destino.
   static Map<String, WidgetBuilder> getRoutes() {
     return {
       home: (context) => const EventFormScreen(),

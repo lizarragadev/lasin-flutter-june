@@ -3,6 +3,12 @@ import 'package:flutter/services.dart';
 import '../models/registration_model.dart';
 import '../routes/app_routes.dart';
 
+// TEORÍA SOBRE STATEFULWIDGET:
+// Un [StatefulWidget] representa un widget cuya configuración es inmutable pero que mantiene
+// un objeto de tipo [State] asociado que es mutable y persiste a través de los ciclos de vida del widget.
+// Se compone de dos clases distintas:
+// 1. La clase que extiende a [StatefulWidget], que define la interfaz pública y recibe parámetros inmutables.
+// 2. La clase que extiende a [State], que contiene las variables mutables y el método [build].
 class EventFormScreen extends StatefulWidget {
   const EventFormScreen({super.key});
 
@@ -10,6 +16,8 @@ class EventFormScreen extends StatefulWidget {
   State<EventFormScreen> createState() => _EventFormScreenState();
 }
 
+// TEORÍA DE LA CLASE DE ESTADO (_State):
+// Aquí declaramos el estado interno del formulario. Este estado persiste cuando Flutter redibuja el árbol.
 class _EventFormScreenState extends State<EventFormScreen> {
   // TEORÍA SOBRE GLOBALKEY Y FORMSTATE:
   // [GlobalKey] es una clave única en toda la aplicación. Al tiparla como GlobalKey<FormState>,
@@ -29,27 +37,39 @@ class _EventFormScreenState extends State<EventFormScreen> {
   final _emailController = TextEditingController();
   final _ageController = TextEditingController();
   
+  // Variables de control de estado interno.
+  // [_selectedTicket] almacena la opción seleccionada actualmente en el dropdown.
   String _selectedTicket = 'General';
+  // [_tickets] es la lista de opciones válidas para rellenar los elementos del dropdown.
   final List<String> _tickets = ['General', 'VIP', 'Backstage Access'];
+  // [_confirmationCode] guardará el código de ticket retornado por la pantalla de resumen.
+  // Al ser nullable (String?), puede iniciar en null cuando aún no se ha completado el registro.
   String? _confirmationCode;
 
+  // TEORÍA SOBRE EL MÉTODO DISPOSE:
+  // [dispose] se llama automáticamente cuando el widget se elimina de forma permanente del árbol.
+  // Se utiliza para liberar memoria y recursos, cerrando flujos de datos o eliminando controladores.
   @override
   void dispose() {
     // Liberación de recursos del sistema al destruir el estado de la pantalla.
     _nameController.dispose();
     _emailController.dispose();
     _ageController.dispose();
+    // Es buena práctica llamar a super.dispose() al final para completar la destrucción del estado.
     super.dispose();
   }
 
-  /// Procesa la lógica de validación, empaquetado de datos y navegación.
+  // TEORÍA DE ASINCRONÍA Y NAVEGACIÓN:
+  // El método se marca con la palabra clave [async] porque la navegación puede tardar tiempo en retornar
+  // un resultado (espera interactiva del usuario). Al usar [await], pausamos la ejecución de esta función
+  // hasta que la siguiente pantalla haga un pop y nos envíe los datos de vuelta.
   void _submitForm() async {
-    // TEORÍA DE VALIDACIÓN DE FORMULARIOS:
     // El método 'validate()' dispara automáticamente la función 'validator' de cada uno
     // de los TextFormFields que están anidados dentro de nuestro widget Form.
     // Retorna true únicamente si todos los validators retornan null (es decir, ningún error).
     if (_formKey.currentState!.validate()) {
       // Empaquetamos la información recolectada del texto crudo de los controladores.
+      // Convertimos la edad usando int.parse ya que _ageController.text es un String y nuestro modelo espera un int.
       final registration = RegistrationModel(
         name: _nameController.text,
         email: _emailController.text,
@@ -68,13 +88,20 @@ class _EventFormScreenState extends State<EventFormScreen> {
         arguments: registration,
       );
 
-      // Si el usuario confirmó el ticket, recibimos el código de confirmación.
+      // TEORÍA SOBRE EL ATRIBUTO MOUNTED:
+      // [mounted] es una propiedad booleana integrada en la clase State. Indica si el widget sigue
+      // cargado en la memoria y en el árbol de widgets activo.
+      // IMPORTANTE: Antes de llamar a [setState] después de un proceso asíncrono (como un await de navegación),
+      // siempre debemos validar `if (mounted)`. Si el usuario retrocedió o cerró la pantalla durante la espera,
+      // llamar a setState en un widget desmotado arrojaría un error fatal.
       if (result != null && mounted) {
+        // Ejecutamos setState para indicarle a Flutter que redibuje el widget con los nuevos datos recibidos.
         setState(() {
           _confirmationCode = result as String;
         });
         
         // Limpiamos los estados internos del Form y de los controladores de texto.
+        // [reset()] limpia los mensajes de validación visuales en pantalla y valores por defecto del formulario.
         _formKey.currentState!.reset();
         _nameController.clear();
         _emailController.clear();
@@ -83,12 +110,21 @@ class _EventFormScreenState extends State<EventFormScreen> {
     }
   }
 
+  // TEORÍA DEL MÉTODO BUILD:
+  // Es la función central de renderizado de Flutter. Se ejecuta automáticamente cada vez que:
+  // 1. El widget se inicializa en el árbol.
+  // 2. Se invoca a [setState] en este objeto de estado.
+  // 3. Cambian dependencias heredadas (como temas o localización).
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // AppBar dibuja la cabecera superior del Material Scaffold.
       appBar: AppBar(
         title: const Text('Registro al Flutter Fest 2026'),
       ),
+      // [SingleChildScrollView] es fundamental al construir formularios. Hace que el contenido sea desplazable.
+      // Esto previene errores de desbordamiento de pantalla (Yellow/Black striped banner) cuando el teclado
+      // virtual del dispositivo móvil se despliega y ocupa espacio físico en la pantalla.
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -103,6 +139,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Banner promocional del evento usando widgets de diseño comunes (Card, Row, Column, Icon).
               Card(
                 color: Theme.of(context).colorScheme.primaryContainer,
                 child: Padding(
@@ -157,7 +194,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   border: OutlineInputBorder(),
                 ),
                 validator: (val) {
-                  // Validación de presencia
+                  // Validación de presencia: Evita que el usuario envíe espacios vacíos o texto en blanco.
                   if (val == null || val.trim().isEmpty) {
                     return 'El nombre es obligatorio';
                   }
@@ -244,6 +281,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
               ),
               const SizedBox(height: 16),
               
+              // TEORÍA SOBRE DROPDOWNBUTTONFORMFIELD:
+              // Es una variante de Dropdown que incluye integración nativa con el widget [Form] y decoraciones.
+              // - [initialValue]: Valor predeterminado que debe coincidir exactamente con uno de los items.
+              // - [items]: Espera una lista de widgets [DropdownMenuItem] que representan las opciones.
               DropdownButtonFormField<String>(
                 initialValue: _selectedTicket,
                 decoration: const InputDecoration(
@@ -251,11 +292,14 @@ class _EventFormScreenState extends State<EventFormScreen> {
                   prefixIcon: Icon(Icons.confirmation_number),
                   border: OutlineInputBorder(),
                 ),
+                // Mapeamos nuestra lista simple de Strings en una lista de DropdownMenuItem.
                 items: _tickets.map((t) {
                   return DropdownMenuItem(value: t, child: Text(t));
                 }).toList(),
+                // Se ejecuta cuando el usuario selecciona una opción diferente.
                 onChanged: (val) {
                   if (val != null) {
+                    // Actualizamos la variable interna dentro de setState para repintar la UI con la nueva selección.
                     setState(() {
                       _selectedTicket = val;
                     });
@@ -273,6 +317,9 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 child: const Text('Iniciar Registro', style: TextStyle(fontSize: 16)),
               ),
               
+              // RENDERIZADO CONDICIONAL:
+              // Usamos el operador spread (...) y una condición de Dart para inyectar este bloque visual
+              // dentro de la lista de hijos únicamente si [_confirmationCode] no es nulo.
               if (_confirmationCode != null) ...[
                 const SizedBox(height: 24),
                 Container(

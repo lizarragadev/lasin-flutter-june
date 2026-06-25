@@ -4,6 +4,13 @@ import '../models/item.dart';
 import '../providers/cart_provider.dart';
 import '../routes/app_routes.dart';
 
+// TEORÍA SOBRE RE-RENDERIZACIÓN EN STATELESSWIDGET CON PROVIDER:
+// ¿Por qué esta pantalla es un [StatelessWidget] si el catálogo reacciona dinámicamente
+// al agregar elementos o cambiar el contador del carrito?
+// - No necesitamos un [StatefulWidget] local con `setState` porque delegamos toda la reactividad
+//   a un Gestor de Estado externo (`CartProvider` a través de `Provider`).
+// - Mediante `context.watch<CartProvider>()`, Flutter se encarga de suscribir el widget e invocar
+//   el método build completo cada vez que el carrito emite notificaciones de cambio.
 class CatalogScreen extends StatelessWidget {
   const CatalogScreen({super.key});
 
@@ -23,20 +30,25 @@ class CatalogScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Tienda de Merch Flutter'),
         actions: [
+          // TEORÍA SOBRE EL WIDGET STACK:
+          // [Stack] permite superponer múltiples widgets unos encima de otros en capas de adelante hacia atrás.
+          // Aquí lo usamos para colocar el Badge (contador rojo de artículos) sobre la esquina del Icono de Carrito.
           Stack(
             alignment: Alignment.center,
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  // Navegación mediante ruta nombrada.
+                  // Navegación mediante ruta nombrada hacia el carrito.
                   Navigator.pushNamed(
                     context,
                     AppRoutes.cart,
                   );
                 },
               ),
+              // Renderizado condicional del badge: solo se dibuja si hay artículos en el carrito.
               if (cartItemCount > 0)
+                // [Positioned] posiciona de forma absoluta un elemento dentro de un widget Stack.
                 Positioned(
                   right: 8,
                   top: 8,
@@ -66,17 +78,23 @@ class CatalogScreen extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
+      // TEORÍA SOBRE GRIDVIEW.BUILDER:
+      // [GridView.builder] renderiza una grilla bidimensional de manera perezosa (lazy).
+      // Solo instanciará los widgets de las celdas que son físicamente visibles en la pantalla,
+      // optimizando drásticamente el uso de memoria y rendimiento para listas o catálogos largos.
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
+        // [gridDelegate] define la estructura geométrica de la grilla.
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 0.8,
+          crossAxisCount: 2, // Dibuja exactamente 2 columnas
+          crossAxisSpacing: 16, // Espaciado horizontal entre celdas
+          mainAxisSpacing: 16, // Espaciado vertical entre celdas
+          childAspectRatio: 0.8, // Proporción altura/anchura de las celdas (más altas que anchas)
         ),
         itemCount: mockItems.length,
         itemBuilder: (context, index) {
           final item = mockItems[index];
+          // Validamos si este producto específico ya fue agregado al carrito
           final bool isInCart = cart.items.contains(item);
 
           return Card(
@@ -88,6 +106,7 @@ class CatalogScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
+                      // Usamos withAlpha para simular un fondo semi-transparente del color del producto
                       color: item.color.withAlpha(51),
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                     ),
@@ -123,6 +142,7 @@ class CatalogScreen extends StatelessWidget {
                               isInCart ? Icons.check_circle : Icons.add_circle,
                               color: isInCart ? Colors.green : Colors.blue,
                             ),
+                            // Si ya está en el carrito, deshabilitamos el botón pasando null a onPressed
                             onPressed: isInCart
                                 ? null
                                 : () {

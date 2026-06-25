@@ -10,13 +10,22 @@ import '../models/item.dart';
 /// para indicarle al paquete 'provider' que reconstruya todos los widgets que estén "escuchando" o consumiendo este estado.
 class CartProvider extends ChangeNotifier {
   // Lista privada mutable de elementos en el carrito.
+  // Es privada (empieza con guion bajo `_`) para impedir manipulaciones externas descontroladas.
   final List<Item> _items = [];
 
-  // Exponemos la lista como inmutable para asegurar que nadie modifique los datos
-  // fuera de los métodos autorizados de esta clase (Encapsulamiento).
+  // TEORÍA SOBRE ENCAPSULAMIENTO Y LIST.UNMODIFIABLE:
+  // Exponemos la lista interna a través de un getter público inmutable usando `List.unmodifiable(...)`.
+  // - Si un desarrollador intenta hacer `cartProvider.items.add(otroItem)` desde una pantalla,
+  //   el compilador lanzará una excepción inmediatamente en tiempo de ejecución.
+  // - Toda alteración del estado debe forzosamente ocurrir a través de los métodos públicos autorizados
+  //   (`addItem`, `removeItem`, `clearCart`), garantizando la integridad de los datos de la aplicación.
   List<Item> get items => List.unmodifiable(_items);
 
-  /// Calcula dinámicamente la sumatoria de precios de los elementos en el carrito.
+  // TEORÍA SOBRE EL MÉTODO FOLD:
+  // [.fold] es un método utilitario de programación funcional en Dart para iterables.
+  // - Recibe un valor inicial (en este caso, `0.0` para indicar punto flotante).
+  // - Procesa cada elemento de la colección sumando el precio del artículo actual (`item.price`)
+  //   al acumulador acumulado (`sum`), retornando el total consolidado.
   double get totalPrice => _items.fold(0.0, (sum, item) => sum + item.price);
 
   /// Agrega un elemento al carrito si no existe previamente y notifica el cambio.
