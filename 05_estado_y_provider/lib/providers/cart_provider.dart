@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import '../models/item.dart';
 
-/// Clase proveedora del estado del carrito de compras.
-/// 
-/// TEORÍA SOBRE CHANGENOTIFIER:
-/// [ChangeNotifier] es una clase simple incluida en el SDK de Flutter que provee notificaciones de cambio a sus suscriptores.
-/// Al heredar de ChangeNotifier, obtenemos el método [notifyListeners].
-/// Cuando mutamos los datos internos del carrito (como agregar o quitar productos), llamamos a [notifyListeners()]
-/// para indicarle al paquete 'provider' que reconstruya todos los widgets que estén "escuchando" o consumiendo este estado.
+// =============================================================================
+// TEORÍA SOBRE EL PATRÓN OBSERVADOR (OBSERVER PATTERN) Y CHANGENOTIFIER:
+// [ChangeNotifier] es una clase ligera e integrada en el SDK de Flutter (dentro de
+// foundation.dart) que proporciona una implementación nativa del Patrón Observador.
+//
+// ¿Cómo opera a bajo nivel?
+// 1. **Registro**: Los widgets consumidores (como CatalogScreen o CartScreen) se
+//    registran como "escuchas" o suscriptores de esta clase al acceder a ella.
+// 2. **Notificación**: Cuando algún método de esta clase modifica la lista privada
+//    de productos, llamamos a [notifyListeners()].
+// 3. **Reconstrucción**: Este método recorre todos los widgets registrados y les
+//    notifica de la mutación de datos. Esto le indica al framework que debe volver
+//    a ejecutar el método `build()` en cada uno de ellos para refrescar la interfaz.
+// =============================================================================
 class CartProvider extends ChangeNotifier {
   // Lista privada mutable de elementos en el carrito.
   // Es privada (empieza con guion bajo `_`) para impedir manipulaciones externas descontroladas.
@@ -30,6 +37,7 @@ class CartProvider extends ChangeNotifier {
 
   /// Agrega un elemento al carrito si no existe previamente y notifica el cambio.
   void addItem(Item item) {
+    // Evitamos duplicidad de artículos para mantener la consistencia del carrito
     if (!_items.contains(item)) {
       _items.add(item);
       // Al llamar a notifyListeners, todos los widgets suscritos (como el badge en CatalogScreen
@@ -41,12 +49,14 @@ class CartProvider extends ChangeNotifier {
   /// Remueve un elemento del carrito y notifica el cambio.
   void removeItem(Item item) {
     _items.remove(item);
+    // Notifica de inmediato a la interfaz para que el elemento desaparezca de la lista
     notifyListeners();
   }
 
   /// Vacía por completo el listado del carrito.
   void clearCart() {
     _items.clear();
+    // Notifica el vaciado para regresar la UI a su estado inicial de "Carrito Vacío"
     notifyListeners();
   }
 }

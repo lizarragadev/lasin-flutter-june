@@ -51,8 +51,13 @@ class CartScreen extends StatelessWidget {
             )
           : Column(
               children: [
-                // [Expanded] obliga al ListView a ocupar todo el espacio vertical disponible,
-                // dejando que el contenedor inferior de pago quede anclado a la base de la pantalla.
+                // TEORÍA SOBRE WIDGET EXPANDED Y VERTICAL VIEWPORT ERROR:
+                // [Expanded] obliga al ListView a ocupar todo el espacio vertical disponible en la pantalla.
+                // IMPORTANTE: Un [ListView] por definición tiene una altura ilimitada (unbounded height).
+                // Si colocamos un ListView directamente dentro de una [Column] (que también tiene altura ilimitada),
+                // Flutter arrojará un error de diseño catastrófico: "Vertical viewport was given unbounded height".
+                // Envolver el ListView en un widget [Expanded] le comunica a Flutter que el tamaño vertical del
+                // listado debe restringirse al espacio restante disponible en la columna, solucionando el error.
                 Expanded(
                   // TEORÍA SOBRE LISTVIEW.BUILDER:
                   // Al igual que GridView.builder, renderiza celdas solo cuando se desplazan a la vista (lazy rendering).

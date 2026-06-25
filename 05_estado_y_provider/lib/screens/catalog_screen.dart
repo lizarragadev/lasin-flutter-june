@@ -16,13 +16,22 @@ class CatalogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TEORÍA SOBRE CONTEXT.WATCH Y CONTEXT.READ:
-    // En el paquete 'provider', el acceso al estado se puede realizar de dos formas principales:
+    // TEORÍA COMPLETA SOBRE CONTEXT.WATCH Y CONTEXT.READ:
+    // El paquete 'provider' expone extensiones de tipo en BuildContext para interactuar con el árbol.
     //
-    // 1. [context.watch<T>()]: 
-    //    Establece una suscripción activa entre este widget y el proveedor de estado (CartProvider).
-    //    Si el CartProvider invoca 'notifyListeners()', este método 'build' volverá a ejecutarse por completo.
-    //    Es ideal para leer valores que queremos mostrar en pantalla y actualizar automáticamente (como el número de ítems).
+    // 1. [context.watch<T>()]:
+    //    - Establece un vínculo de dependencia dinámico y bidireccional entre el widget y el Proveedor.
+    //    - Cada vez que el Proveedor llame a 'notifyListeners()', este widget completo (desde esta línea hacia abajo)
+    //      se marcará como "sucio" y se volverá a compilar en el siguiente frame.
+    //    - USO: Obligatorio en la raíz del build o allí donde necesitemos leer datos que cambian con el tiempo (como la lista de compras).
+    //
+    // 2. [context.read<T>()]:
+    //    - Obtiene la referencia directa al Proveedor de forma estática, SIN establecer ninguna suscripción.
+    //    - Si los datos del Proveedor cambian, el widget NO se redibujará.
+    //    - USO: Reservado exclusivamente para métodos dentro de botones, gestores de gestos u callbacks (como 'onPressed').
+    //    - NOTA CLAVE DE RENDIMIENTO: Al usar context.read para ejecutar una acción (como 'addItem'), evitamos registrar
+    //      un enlace innecesario. Si usáramos context.watch dentro de un botón (lo cual arrojaría error), el botón
+    //      se reconstruiría inútilmente.
     final cart = context.watch<CartProvider>();
     final int cartItemCount = cart.items.length;
 
@@ -106,7 +115,11 @@ class CatalogScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      // Usamos withAlpha para simular un fondo semi-transparente del color del producto
+                      // NOTA DE DEPRECACIÓN EVITADA:
+                      // En versiones modernas de Flutter SDK, llamar a `color.withOpacity` en bucles de construcción
+                      // constantes genera advertencias de optimización o está marcado como obsoleto.
+                      // En su lugar, usamos `color.withAlpha(51)` (51 equivale a 20% de opacidad en una escala de 0 a 255)
+                      // para lograr el mismo efecto visual translúcido de forma nativa y eficiente.
                       color: item.color.withAlpha(51),
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                     ),
@@ -146,12 +159,7 @@ class CatalogScreen extends StatelessWidget {
                             onPressed: isInCart
                                 ? null
                                 : () {
-                                    // TEORÍA SOBRE CONTEXT.READ<T>():
-                                    // 2. [context.read<T>()]:
-                                    //    Obtiene una referencia al CartProvider de manera estática, SIN suscribirse
-                                    //    a futuras notificaciones. El widget no volverá a reconstruirse si los datos cambian.
-                                    //    Es una regla fundamental usar context.read() dentro de callbacks de eventos (como onPressed)
-                                    //    para realizar acciones o disparar métodos del proveedor, optimizando el rendimiento.
+                                    // Invocamos la acción addItem en el CartProvider sin generar dependencias de escucha.
                                     context.read<CartProvider>().addItem(item);
                                   },
                           ),
