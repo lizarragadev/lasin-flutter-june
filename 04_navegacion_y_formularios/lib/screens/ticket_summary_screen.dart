@@ -1,19 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import '../models/registration_model.dart';
 
 class TicketSummaryScreen extends StatelessWidget {
-  final String name;
-  final String email;
-  final int age;
-  final String ticketType;
-
-  const TicketSummaryScreen({
-    super.key,
-    required this.name,
-    required this.email,
-    required this.age,
-    required this.ticketType,
-  });
+  const TicketSummaryScreen({super.key});
 
   String _generateConfirmationCode() {
     final rand = Random();
@@ -23,6 +13,8 @@ class TicketSummaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final registration = ModalRoute.of(context)!.settings.arguments as RegistrationModel;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resumen del Ticket'),
@@ -61,7 +53,7 @@ class TicketSummaryScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            ticketType.toUpperCase(),
+                            registration.ticketType.toUpperCase(),
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                         )
@@ -70,15 +62,15 @@ class TicketSummaryScreen extends StatelessWidget {
                     const Divider(height: 32),
                     const Text('Asistente:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(registration.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
                     const Text('Correo:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text(email, style: const TextStyle(fontSize: 16)),
+                    Text(registration.email, style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 16),
                     const Text('Edad:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text('$age años', style: const TextStyle(fontSize: 16)),
+                    Text('${registration.age} años', style: const TextStyle(fontSize: 16)),
                   ],
                 ),
               ),

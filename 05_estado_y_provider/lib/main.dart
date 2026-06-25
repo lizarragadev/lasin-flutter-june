@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/cart_provider.dart';
-import 'screens/catalog_screen.dart';
+import 'routes/app_routes.dart';
 
 void main() {
   runApp(
@@ -27,7 +27,8 @@ class MainApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      home: const CatalogScreen(),
+      initialRoute: AppRoutes.catalog,
+      routes: AppRoutes.getRoutes(),
     );
   }
 }

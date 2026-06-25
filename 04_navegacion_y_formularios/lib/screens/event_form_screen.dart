@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'ticket_summary_screen.dart';
+import '../models/registration_model.dart';
+import '../routes/app_routes.dart';
 
 class EventFormScreen extends StatefulWidget {
   const EventFormScreen({super.key});
@@ -28,25 +29,22 @@ class _EventFormScreenState extends State<EventFormScreen> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final name = _nameController.text;
-      final email = _emailController.text;
-      final age = int.parse(_ageController.text);
+      final registration = RegistrationModel(
+        name: _nameController.text,
+        email: _emailController.text,
+        age: int.parse(_ageController.text),
+        ticketType: _selectedTicket,
+      );
 
-      final result = await Navigator.push<String>(
+      final result = await Navigator.pushNamed<dynamic>(
         context,
-        MaterialPageRoute(
-          builder: (context) => TicketSummaryScreen(
-            name: name,
-            email: email,
-            age: age,
-            ticketType: _selectedTicket,
-          ),
-        ),
+        AppRoutes.summary,
+        arguments: registration,
       );
 
       if (result != null && mounted) {
         setState(() {
-          _confirmationCode = result;
+          _confirmationCode = result as String;
         });
         _formKey.currentState!.reset();
         _nameController.clear();
@@ -159,7 +157,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedTicket,
+                initialValue: _selectedTicket,
                 decoration: const InputDecoration(
                   labelText: 'Tipo de Entrada',
                   prefixIcon: Icon(Icons.confirmation_number),
@@ -190,7 +188,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade900.withOpacity(0.3),
+                    color: const Color(0x4D1B5E20),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.green),
                   ),
