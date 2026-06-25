@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/registration_model.dart';
 import '../routes/app_routes.dart';
 
@@ -64,6 +65,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -100,6 +102,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 controller: _nameController,
+                maxLength: 50,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]')),
+                ],
                 decoration: const InputDecoration(
                   labelText: 'Nombre completo',
                   prefixIcon: Icon(Icons.person),
@@ -126,6 +132,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
+                maxLength: 100,
                 decoration: const InputDecoration(
                   labelText: 'Correo electrónico',
                   prefixIcon: Icon(Icons.email),
@@ -149,6 +156,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
               TextFormField(
                 controller: _ageController,
                 keyboardType: TextInputType.number,
+                maxLength: 3,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 decoration: const InputDecoration(
                   labelText: 'Edad',
                   prefixIcon: Icon(Icons.cake),
