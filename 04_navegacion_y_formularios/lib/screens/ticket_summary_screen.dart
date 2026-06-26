@@ -1,16 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:navegacion_y_formularios/models/registration_model.dart';
 
 class TicketSummaryScreen extends StatelessWidget {
   const TicketSummaryScreen({super.key});
 
+  String _generateConfirmationCode() {
+    final random = Random();
+    final number = random.nextInt(900000) + 100000;
+    return "FF-$number";
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: Recuperar argumentos enviados por la ruta
-    const String name = 'Nombre del Alumno';
-    const String email = 'alumno@test.com';
-    const int age = 25;
-    const String ticketType = 'VIP';
-
+    final registration = ModalRoute.of(context)!.settings.arguments as RegistrationModel;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resumen del Ticket'),
@@ -49,7 +54,7 @@ class TicketSummaryScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            ticketType.toUpperCase(),
+                            registration.ticketType.toUpperCase(),
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                         )
@@ -58,15 +63,15 @@ class TicketSummaryScreen extends StatelessWidget {
                     const Divider(height: 32),
                     const Text('Asistente:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(registration.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
                     const Text('Correo:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text(email, style: const TextStyle(fontSize: 16)),
+                    Text(registration.email, style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 16),
                     const Text('Edad:', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text('$age años', style: const TextStyle(fontSize: 16)),
+                    Text('${registration.age} años', style: const TextStyle(fontSize: 16)),
                   ],
                 ),
               ),
@@ -74,7 +79,8 @@ class TicketSummaryScreen extends StatelessWidget {
             const SizedBox(height: 40),
             ElevatedButton.icon(
               onPressed: () {
-                // TODO: Generar código de confirmación y retornarlo al cerrar pantalla
+                final code = _generateConfirmationCode();
+                Navigator.pop(context, code);
               },
               icon: const Icon(Icons.check_circle),
               label: const Text('Confirmar Entrada'),
