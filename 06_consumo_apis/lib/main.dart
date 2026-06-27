@@ -1,3 +1,4 @@
+// ignore_for_file: unused_import
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 // TODO: Importar el viewmodel y la vista
@@ -6,20 +7,12 @@ void main() {
   runApp(const MainApp());
 }
 
-/// =============================================================================
-/// ARQUITECTURA MVVM - SKELETON
-/// 
-/// TODO: Configurar la inyección y provisión del ViewModel:
-/// 1. Envuelve a [MaterialApp] dentro de un [ChangeNotifierProvider].
-/// 2. Pasa una instancia de [UserViewModel] al callback [create].
-/// 3. Define la pantalla inicial ([home]) apuntando a [UsersScreen].
-/// =============================================================================
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Configurar el Provider para proveer UserViewModel a toda la app
+    // TODO: Configurar el Provider para proveer UserViewModel a toda la app y UsersScreen como home
     return MaterialApp(
       title: 'Consumo de APIs (MVVM & Caché)',
       debugShowCheckedModeBanner: false,
