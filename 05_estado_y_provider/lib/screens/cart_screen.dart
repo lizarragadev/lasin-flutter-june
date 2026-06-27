@@ -1,13 +1,15 @@
+import 'package:estado_y_provider/providers/cart_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Obtener el listado del carrito y total a pagar usando Provider
-    final List<dynamic> cartItems = [];
-    const double totalPrice = 0.0;
+    final cart = context.watch<CartProvider>();
+    final cartItems = cart.items;
+    final double totalPrice = cart.totalPrice;
 
     return Scaffold(
       appBar: AppBar(
@@ -17,7 +19,7 @@ class CartScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.delete_sweep),
               onPressed: () {
-                // TODO: Vaciar carrito usando Provider
+                context.read<CartProvider>().clearCart();
               },
               tooltip: 'Vaciar Carrito',
             ),
@@ -56,7 +58,7 @@ class CartScreen extends StatelessWidget {
                           trailing: IconButton(
                             icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
                             onPressed: () {
-                              // TODO: Eliminar elemento del carrito usando Provider
+                              context.read<CartProvider>().removeItem(item);
                             },
                           ),
                         ),
@@ -102,7 +104,11 @@ class CartScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
-                            // TODO: Limpiar carrito y navegar hacia atrás
+                            context.read<CartProvider>().clearCart();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("¡Pago realizado con éxito!"))
+                            );
+                            Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),

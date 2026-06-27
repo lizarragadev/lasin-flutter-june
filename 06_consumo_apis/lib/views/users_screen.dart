@@ -14,20 +14,46 @@ class _UsersScreenState extends State<UsersScreen> {
   @override
   void initState() {
     super.initState();
-    // TODO: Disparar la carga inicial de usuarios delegando en el ViewModel
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserViewModel>().fetchUsers();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Escuchar reactivamente al UserViewModel
+    final viewModel = context.watch<UserViewModel>();
     
     return Scaffold(
       appBar: AppBar(
         title: const Text('Directorio de Usuarios'),
+        actions: [
+          IconButton(onPressed: () {
+            viewModel.fetchUsers();
+          }, icon: const Icon(Icons.refresh))
+        ],
       ),
-      body: const Center(
-        child: Text('Implementar UI reactiva suscrita al ViewModel'),
+      body: Column(
+        children: [
+          Expanded(child: _buildContent(viewModel))
+        ],
       ),
+    );
+  }
+
+  Widget _buildContent(UserViewModel viewModel) {
+    return ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: viewModel.users.length,
+        itemBuilder: (context, index) {
+          final user = viewModel.users[index];
+          return Card(
+            elevation: 4,
+            child: ListTile(
+              title: Text(user.name),
+              subtitle: Text(user.username),
+            ),
+          );
+        }
     );
   }
 }

@@ -3,16 +3,23 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/user.dart';
 
+// endpoint
+
 class ApiService {
   static const String _baseUrl = 'https://jsonplaceholder.typicode.com';
 
-  // TODO: Implementar la petición GET a /users
-  // 1. Hacer el llamado http.get() con la URL adecuada.
-  // 2. Verificar si el status code es 200.
-  // 3. Decodificar el body usando jsonDecode().
-  // 4. Mapear la lista de mapas a una lista de objetos User (usando User.fromJson).
-  // 5. Manejar errores con bloques try-catch o lanzando excepciones.
   Future<List<User>> fetchUsers() async {
-    return [];
+    try {
+      final response = await http.get(Uri.parse('$_baseUrl/users'));
+      if(response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((json) => User.fromJson(json)).toList();
+      } else {
+        throw Exception("Error al obtener los usuarios: ${response.statusCode}");
+      }
+    } catch(e) {
+      throw Exception(
+          "Fallo en la conexión, asegúrate de tener acceso a internet");
+    }
   }
 }

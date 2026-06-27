@@ -9,13 +9,28 @@ class UserViewModel extends ChangeNotifier {
   final ApiService _apiService = ApiService();
   static const String _cacheKey = 'cached_users_key';
 
-  // TODO: 1. Declarar variables de estado (users, isLoading, errorMessage, isOffline)
-  
-  // TODO: 2. Implementar getters públicos
+  List<User> _users = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+  bool _isOffline = false;
 
-  // TODO: 3. Implementar el método principal fetchUsers() para obtener datos y guardar en caché local
+  List<User> get users => _users;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  bool get isOffline => _isOffline;
+
   Future<void> fetchUsers() async {
-    // Recuerda llamar a notifyListeners()
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final fetchedUsers = await _apiService.fetchUsers();
+      _users = fetchedUsers;
+      _isOffline = false;
+      //guardar en cache
+    } catch(e) {
+      // Cuando no haya conexión a internet
+    }
   }
 
   // TODO: 4. Implementar método para guardar caché local

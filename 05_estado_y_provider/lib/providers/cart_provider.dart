@@ -11,17 +11,17 @@ class CartProvider extends ChangeNotifier {
   void addItem(Item item) {
     if (!_items.contains(item)) {
       _items.add(item);
-      // TODO: Notificar a los suscriptores
+      notifyListeners();
     }
   }
 
   void removeItem(Item item) {
     _items.remove(item);
-    // TODO: Notificar a los suscriptores
+    notifyListeners();
   }
 
   void clearCart() {
     _items.clear();
-    // TODO: Notificar a los suscriptores
+    notifyListeners();
   }
 }

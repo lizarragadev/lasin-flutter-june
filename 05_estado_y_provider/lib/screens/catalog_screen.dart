@@ -1,13 +1,16 @@
+import 'package:estado_y_provider/routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/item.dart';
+import '../providers/cart_provider.dart';
 
 class CatalogScreen extends StatelessWidget {
   const CatalogScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Escuchar los cambios del carrito usando Provider
-    const int cartItemCount = 0;
+    final cart = context.watch<CartProvider>();
+    final int cartItemCount = cart.items.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -19,7 +22,7 @@ class CatalogScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
                 onPressed: () {
-                  // TODO: Navegar a la pantalla del carrito
+                  Navigator.pushNamed(context, AppRoutes.cart);
                 },
               ),
               if (cartItemCount > 0)
@@ -64,7 +67,7 @@ class CatalogScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final item = mockItems[index];
           // ignore: unused_local_variable
-          const bool isInCart = false;
+          final bool isInCart = cart.items.contains(item);
 
           return Card(
             elevation: 4,
@@ -106,13 +109,17 @@ class CatalogScreen extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(
-                              Icons.add_circle,
-                              color: Colors.blue,
+                            icon: Icon(
+                              isInCart ? Icons.check_circle : Icons.add_circle,
+                              color: isInCart ? Colors.green : Colors.blue,
                             ),
-                            onPressed: () {
-                              // TODO: Añadir elemento al carrito usando Provider
-                            },
+                            onPressed: isInCart
+                              ? () {
+                                context.read<CartProvider>().removeItem(item);
+                              }
+                              : () {
+                                context.read<CartProvider>().addItem(item);
+                              },
                           ),
                         ],
                       ),

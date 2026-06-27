@@ -1,9 +1,15 @@
+import 'package:estado_y_provider/providers/cart_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'routes/app_routes.dart';
 
 void main() {
-  // TODO: Envolver la app en el ChangeNotifierProvider
-  runApp(const MainApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => CartProvider(),
+      child: const MainApp(),
+    )
+  );
 }
 
 class MainApp extends StatelessWidget {
