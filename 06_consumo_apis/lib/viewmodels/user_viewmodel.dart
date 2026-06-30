@@ -29,7 +29,11 @@ class UserViewModel extends ChangeNotifier {
       _isOffline = false;
       //guardar en cache
     } catch(e) {
+      _errorMessage = e.toString();
       // Cuando no haya conexión a internet
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
