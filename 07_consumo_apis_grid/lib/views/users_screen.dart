@@ -108,7 +108,9 @@ class _UsersScreenState extends State<UsersScreen> {
         crossAxisSpacing: 10,
         children: List.generate(viewModel.users.length, (index) {
           final user = viewModel.users[index];
-          final double cardPadding = (index % 3 == 0) ? 12.0 : (index % 3 == 1 ? 24.0 : 36.0);
+          
+          // Estilo de padding variable para enriquecer el efecto visual staggered
+          final double cardPadding = (index % 3 == 0) ? 12.0 : (index % 3 == 1 ? 18.0 : 24.0);
           
           return StaggeredGridTile.fit(
             crossAxisCellCount: 1,
@@ -121,6 +123,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Fila superior: Avatar e Info Básica
                     Row(
                       children: [
                         CircleAvatar(
@@ -142,21 +145,78 @@ class _UsersScreenState extends State<UsersScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
+                    
+                    // Info de Contacto
                     Text(
                       '@${user.username}',
-                      style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
+                      style: TextStyle(color: Colors.teal.shade300, fontSize: 11, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      user.email,
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(Icons.email_outlined, size: 12, color: Colors.grey),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            user.email,
+                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.phone_android_outlined, size: 12, color: Colors.grey),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            user.phone,
+                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.language, size: 12, color: Colors.grey),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            user.website,
+                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    // Separador y Compañía/Locación
+                    const SizedBox(height: 10),
                     const Divider(height: 1),
                     const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on_outlined, size: 12, color: Colors.redAccent),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            user.city,
+                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.business, size: 12, color: Colors.grey),
@@ -170,6 +230,16 @@ class _UsersScreenState extends State<UsersScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Text(
+                        '"${user.companyCatchPhrase}"',
+                        style: TextStyle(fontSize: 9, fontStyle: FontStyle.italic, color: Colors.teal.shade200),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
