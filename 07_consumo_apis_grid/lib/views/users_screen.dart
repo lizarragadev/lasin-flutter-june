@@ -29,15 +29,33 @@ class _UsersScreenState extends State<UsersScreen> {
         title: const Text('Directorio (Grid/Staggered)'),
         actions: [
           IconButton(
-            onPressed: () {
-              viewModel.fetchUsers();
-            }, 
+            onPressed: viewModel.isLoading ? null : () => viewModel.fetchUsers(), 
             icon: const Icon(Icons.refresh),
           )
         ],
       ),
       body: Column(
         children: [
+          // Banner indicador de modo offline
+          if (viewModel.isOffline && viewModel.users.isNotEmpty)
+            Container(
+              width: double.infinity,
+              color: const Color(0xFFD84315),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: const Row(
+                children: [
+                  Icon(Icons.cloud_off, color: Colors.white, size: 20),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Modo sin conexión: Mostrando caché guardada localmente.',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          
           Expanded(child: _buildContent(viewModel))
         ],
       ),
@@ -45,25 +63,53 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   Widget _buildContent(UserViewModel viewModel) {
-    if (viewModel.isLoading) {
+    if (viewModel.isLoading && viewModel.users.isEmpty) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    if (viewModel.errorMessage != null && viewModel.users.isEmpty) {
+      return Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.wifi_off, color: Colors.redAccent, size: 64),
+              const SizedBox(height: 16),
+              const Text(
+                'Error de conexión',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                viewModel.errorMessage!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () => viewModel.fetchUsers(),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Intentar de nuevo'),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     if (viewModel.users.isEmpty) {
       return const Center(child: Text('No hay usuarios disponibles.'));
     }
 
-    // TODO: Diseñar y modificar la estructura del elemento en el Staggered Grid
-    // En este proyecto usamos MasonryGridView.count para generar un listado tipo mosaico (Pinterest)
     return MasonryGridView.count(
       padding: const EdgeInsets.all(12),
-      crossAxisCount: 2, // Dos columnas
+      crossAxisCount: 2,
       mainAxisSpacing: 10,
       crossAxisSpacing: 10,
       itemCount: viewModel.users.length,
       itemBuilder: (context, index) {
         final user = viewModel.users[index];
-        // Asignamos alturas variadas para simular el efecto staggered (mosaico)
         final double cardPadding = (index % 3 == 0) ? 16.0 : (index % 3 == 1 ? 24.0 : 32.0);
         
         return Card(
@@ -93,25 +139,30 @@ class _UsersScreenState extends State<UsersScreen> {
                   '@${user.username}',
                   style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
                 ),
-                if (index % 2 == 0) ...[
-                  const SizedBox(height: 12),
-                  const Divider(height: 1),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Icons.business, size: 14, color: Colors.grey),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          user.companyName,
-                          style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: Colors.grey),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                const SizedBox(height: 8),
+                Text(
+                  user.email,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 12),
+                const Divider(height: 1),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Icons.business, size: 14, color: Colors.grey),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        user.companyName,
+                        style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: Colors.grey),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
