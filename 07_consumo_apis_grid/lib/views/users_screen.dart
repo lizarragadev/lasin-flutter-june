@@ -108,76 +108,66 @@ class _UsersScreenState extends State<UsersScreen> {
         crossAxisSpacing: 10,
         children: List.generate(viewModel.users.length, (index) {
           final user = viewModel.users[index];
-          final double cardExtent = (index % 3 == 0) ? 140.0 : (index % 3 == 1 ? 180.0 : 120.0);
+          final double cardPadding = (index % 3 == 0) ? 12.0 : (index % 3 == 1 ? 24.0 : 36.0);
           
-          return StaggeredGridTile.extent(
+          return StaggeredGridTile.fit(
             crossAxisCellCount: 1,
-            mainAxisExtent: cardExtent,
             child: Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: cardPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.teal.shade700,
-                              radius: 14,
-                              child: Text(
-                                user.name[0],
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                user.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                        CircleAvatar(
+                          backgroundColor: Colors.teal.shade700,
+                          radius: 14,
+                          child: Text(
+                            user.name[0],
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '@${user.username}',
-                          style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          user.email,
-                          style: const TextStyle(fontSize: 10, color: Colors.grey),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            user.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(height: 12),
+                    Text(
+                      '@${user.username}',
+                      style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      user.email,
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 12),
+                    const Divider(height: 1),
+                    const SizedBox(height: 8),
+                    Row(
                       children: [
-                        const Divider(height: 1),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.business, size: 12, color: Colors.grey),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                user.companyName,
-                                style: const TextStyle(fontSize: 10, fontStyle: FontStyle.italic, color: Colors.grey),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                        const Icon(Icons.business, size: 12, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            user.companyName,
+                            style: const TextStyle(fontSize: 10, fontStyle: FontStyle.italic, color: Colors.grey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
