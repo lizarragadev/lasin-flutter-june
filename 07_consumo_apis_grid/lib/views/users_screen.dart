@@ -1,4 +1,3 @@
-// ignore_for_file: unused_import
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +35,6 @@ class _UsersScreenState extends State<UsersScreen> {
       ),
       body: Column(
         children: [
-          // Banner indicador de modo offline
           if (viewModel.isOffline && viewModel.users.isNotEmpty)
             Container(
               width: double.infinity,
@@ -102,22 +100,19 @@ class _UsersScreenState extends State<UsersScreen> {
       return const Center(child: Text('No hay usuarios disponibles.'));
     }
 
-    // Usamos el widget StaggeredGrid.count para armar la rejilla de elementos.
-    // Requiere estar dentro de un scroll (SingleChildScrollView) para manejar listas largas.
     return SingleChildScrollView(
       padding: const EdgeInsets.all(12),
       child: StaggeredGrid.count(
-        crossAxisCount: 2, // Define un total de 2 columnas de ancho
+        crossAxisCount: 2,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
         children: List.generate(viewModel.users.length, (index) {
           final user = viewModel.users[index];
-          // Asignamos una altura fija diferente a las tarjetas para generar el efecto staggered
           final double cardExtent = (index % 3 == 0) ? 140.0 : (index % 3 == 1 ? 180.0 : 120.0);
           
           return StaggeredGridTile.extent(
-            crossAxisCellCount: 1, // Ocupa 1 de las 2 columnas de ancho
-            mainAxisExtent: cardExtent, // Altura en píxeles lógicos
+            crossAxisCellCount: 1,
+            mainAxisExtent: cardExtent,
             child: Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

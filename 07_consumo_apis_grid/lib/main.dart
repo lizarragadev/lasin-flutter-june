@@ -1,11 +1,7 @@
-// ignore_for_file: unused_import
 import 'package:consumo_apis_grid/viewmodels/user_viewmodel.dart';
 import 'package:consumo_apis_grid/views/users_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// TODO: Importar el viewmodel y la vista
-// MVVM - Model View ViewModel
-// Model ---   ViewModel   ---  View
 
 void main() {
   runApp(const MainApp());
