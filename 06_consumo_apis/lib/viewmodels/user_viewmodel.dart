@@ -27,15 +27,47 @@ class UserViewModel extends ChangeNotifier {
       final fetchedUsers = await _apiService.fetchUsers();
       _users = fetchedUsers;
       _isOffline = false;
-      //guardar en cache
+      await _saveUsersToCache(fetchedUsers);
     } catch(e) {
-      // Cuando no haya conexión a internet
+      _isOffline = true;
+      final cachedUsers = await _loadUsersFromCache();
+
+      if(cachedUsers.isNotEmpty) {
+        _users = cachedUsers;
+        _errorMessage = null;
+      } else {
+        _errorMessage = "No se pudo conectar al servidor y no existen datos locales guardados.";
+        _users = [];
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
-  // TODO: 4. Implementar método para guardar caché local
-  // Future<void> _saveUsersToCache(List<User> usersList) async { ... }
+  Future<void> _saveUsersToCache(List<User> userList) async {
+    try  {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonList = userList.map((u) => u.toJson()).toList();
+      final jsonString = jsonEncode(jsonList);
+      await prefs.setString(_cacheKey, jsonString);
+    } catch(e) {
+      debugPrint("Error al escribir caché.");
+    }
+  }
 
-  // TODO: 5. Implementar método para leer caché local
-  // Future<List<User>> _loadUsersFromCache() async { ... }
+  Future<List<User>>_loadUsersFromCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_cacheKey);
+      if(jsonString != null  && jsonString.isNotEmpty) {
+        final List<dynamic> decodeList = jsonDecode(jsonString);
+        return decodeList.map((json) => User.fromJson(json)).toList();
+      }
+    } catch(e) {
+      debugPrint("Error al leer la caché.");
+    }
+    return [];
+  }
+
 }
